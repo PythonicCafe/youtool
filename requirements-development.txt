@@ -6,3 +6,4 @@ flake8
 ipython
 isort
 pytest
+pytest-dependency

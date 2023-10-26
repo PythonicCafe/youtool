@@ -11,10 +11,12 @@ RUN apt update \
   && apt clean \
   && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt /app/
-COPY requirements-development.txt /app/
+COPY requirements/ /app/requirements
 RUN pip install --no-cache-dir -U pip \
-  && pip install --no-cache-dir -r /app/requirements.txt \
-  && if [ "$DEV_BUILD" = "true" ]; then pip install --no-cache-dir -r /app/requirements-development.txt; fi
+  && pip install --no-cache-dir -r /app/requirements/base.txt \
+  && pip install --no-cache-dir -r /app/requirements/cli.txt \
+  && pip install --no-cache-dir -r /app/requirements/livechat.txt \
+  && pip install --no-cache-dir -r /app/requirements/transcription.txt \
+  && if [ "$DEV_BUILD" = "true" ]; then pip install --no-cache-dir -r /app/requirements/dev.txt; fi
 
 COPY . /app/

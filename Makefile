@@ -10,4 +10,10 @@ shell:
 test:
 	docker compose run --rm main pytest -o cache_dir=/app/.pytest-cache -svvv --pdb --doctest-modules youtool.py tests.py
 
-.PHONY: build lint shell test
+test-release:
+	docker compose run --rm main /app/release.sh --test
+
+release:
+	docker compose run --rm main /app/release.sh
+
+.PHONY: build lint shell test test-release release

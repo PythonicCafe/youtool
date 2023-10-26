@@ -8,9 +8,12 @@ shell:
 	docker compose run --rm -it main bash
 
 test:
-	docker compose exec main pytest
+	docker compose run --rm main pytest -o cache_dir=/app/.pytest-cache -svvv --pdb --doctest-modules youtool.py tests.py
 
-test-v:
-	docker compose exec main pytest -vvv
+test-release:
+	docker compose run --rm main /app/release.sh --test
 
-.PHONY: build lint shell test test-v
+release:
+	docker compose run --rm main /app/release.sh
+
+.PHONY: build lint shell test test-release release

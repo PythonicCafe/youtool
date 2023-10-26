@@ -33,7 +33,7 @@ You may also want some extras:
 
 ```shell
 pip install youtool[livechat]
-pip install youtool[transcriptions]
+pip install youtool[transcription]
 ```
 
 ## Using as a libray

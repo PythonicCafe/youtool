@@ -352,10 +352,9 @@ class YouTube:
         data = response.json()
         # TODO: implement quota
         while "error" in data and 400 <= data["error"]["code"] < 500:
-            try:
-                self.__current_key = self.__api_keys.pop(0)
-            except IndexError:
+            if not self.__api_keys:  # Tried all!
                 raise RuntimeError(f"Too many 4xx errors, tried all YouTube keys ({data['error']['errors']})")
+            self.__current_key = self.__api_keys.pop(0)
             self.__params["key"] = final_params["key"] = self.__current_key
             response = self.session.get(url, params=final_params)
             data = response.json()

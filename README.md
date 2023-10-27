@@ -143,6 +143,7 @@ Pull requests are welcome! :)
     CSV filename with URLs/IDs inside), download files to destination and report results
 - Replace `dict`s with dataclasses
 - Create a website with docs/reference
+- Deal with quotas (wait some time before using a key, for example)
 
 
 ## License

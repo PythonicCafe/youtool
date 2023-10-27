@@ -6,11 +6,13 @@ from pathlib import Path
 from typing import List
 from urllib.parse import urljoin, urlparse
 
-import isodate
+import isodate  # TODO: implement duration parser to remove dependency?
 import requests
 
 REGEXP_CHANNEL_ID = re.compile('"externalId":"([^"]+)"')
 REGEXP_LOCATION_RADIUS = re.compile(r"^[0-9.]+(?:m|km|ft|mi)$")
+REGEXP_NAIVE_DATETIME = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}[T ][0-9]{2}:[0-9]{2}:[0-9]{2}$")
+REGEXP_DATETIME_MILLIS = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}[T ][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+")
 
 
 def cleanup(data):
@@ -91,7 +93,7 @@ def parse_decimal(value):
     return Decimal(value)
 
 
-def parse_datetime(value):
+def parse_datetime(value, default_utc_offset="+00:00"):
     """
     >>> str(parse_datetime(''))
     'None'
@@ -99,13 +101,24 @@ def parse_datetime(value):
     'None'
     >>> parse_datetime('2022-01-15T01:02:03Z')
     datetime.datetime(2022, 1, 15, 1, 2, 3, tzinfo=datetime.timezone.utc)
+    >>> parse_datetime('2022-01-15T01:02:03')
+    datetime.datetime(2022, 1, 15, 1, 2, 3, tzinfo=datetime.timezone.utc)
+    >>> parse_datetime('2022-01-15T01:02:03', default_utc_offset="-03:00")
+    datetime.datetime(2022, 1, 15, 1, 2, 3, tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=75600)))
+    >>> parse_datetime('2023-03-08T18:35:28.266113+00:00')
+    datetime.datetime(2023, 3, 8, 18, 35, 28, 266113, tzinfo=datetime.timezone.utc)
     """
     value = str(value or "").strip()
     if not value:
         return None
+    elif REGEXP_NAIVE_DATETIME.match(value):
+        value = f"{value}{default_utc_offset}"
     if value[-1] == "Z":
         value = value[:-1] + "+00:00"
-    return datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S%z")
+    if REGEXP_DATETIME_MILLIS.match(value):
+        return datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f%z")
+    else:
+        return datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S%z")
 
 
 def parse_timestamp(value):
@@ -337,6 +350,7 @@ class YouTube:
 
         response = self.session.get(url, params=final_params)
         data = response.json()
+        # TODO: implement quota
         while "error" in data and 400 <= data["error"]["code"] < 500:
             try:
                 self.__current_key = self.__api_keys.pop(0)
@@ -413,6 +427,7 @@ class YouTube:
 
     def channels_infos(self, channels_ids: List[str]):
         base_params = {"part": "snippet,contentDetails,statistics"}
+        # TODO: move to brandingSettings,contentDetails,contentOwnerDetails,id,localizations,snippet,statistics,status,topicDetails
         for batch in ipartition(channels_ids, 50):
             data = self.request("channels", params={**base_params, "id": ",".join(batch)})
             if not isinstance(data, dict) or not data.get("items"):

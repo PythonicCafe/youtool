@@ -544,27 +544,27 @@ class YouTube:
 
     def video_search(
         self,
-        term=None,
-        region_code=None,
-        language_code=None,
-        since=None,
-        until=None,
-        order="date",
-        channel_id=None,
+        term: str=None,
+        region_code: str=None,
+        language_code: str=None,
+        since: datetime.datetime=None,
+        until: datetime.datetime=None,
+        order: str="date",
+        channel_id: str=None,
         channel_type=None,
         event_type=None,
         topic=None,
         video_type=None,
-        location=None,
-        location_radius=None,
-        safe_search=None,
-        video_caption=None,
-        video_definition=None,
-        video_dimension=None,
-        video_embeddable=None,
-        video_paid_product_placement=None,
-        video_syndicated=None,
-        video_license=None,
+        location: tuple=None,
+        location_radius: str=None,
+        safe_search: str=None,
+        video_caption: str=None,
+        video_definition: str=None,
+        video_dimension: str=None,
+        video_embeddable: str=None,
+        video_paid_product_placement: str=None,
+        video_syndicated: str=None,
+        video_license: str=None,
         video_category_id=None,
     ):
         """Get list of videos from a search (not all video parameters will be filled, check `parse_video_data`)"""
@@ -583,9 +583,9 @@ class YouTube:
         if language_code is not None:  # ISO 639-1 language code
             params["relevanceLanguage"] = language_code
         if since is not None:
-            params["publishedAfter"] = str(since)  # TODO: parse/check?
+            params["publishedAfter"] = since.isoformat()
         if until is not None:
-            params["publishedBefore"] = str(until)  # TODO: parse/check?
+            params["publishedBefore"] = until.isoformat()
         if order not in ("date", "rating", "relevance", "title", "videoCount", "viewCount"):
             raise ValueError(f"Unknown order type: {repr(order)}")
         if channel_id is not None:

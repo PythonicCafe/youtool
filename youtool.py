@@ -425,6 +425,7 @@ class YouTube:
             yield parse_video_data(item)
 
     def channels_infos(self, channels_ids: List[str]):
+        """Get channel information, like title, subscribers etc."""
         base_params = {"part": "snippet,contentDetails,statistics"}
         # TODO: move to brandingSettings,contentDetails,contentOwnerDetails,id,localizations,snippet,statistics,status,topicDetails
         for batch in ipartition(channels_ids, 50):
@@ -439,12 +440,22 @@ class YouTube:
                 yield result.get(channel_id)
 
     def channel_playlists(self, channel_id: str):
+        """List channel playlists (but not the main - "uploads" - check below for more details)
+
+        To get the main ("uploads") playlist for a channel, you have two options:
+        - Get `channels_infos`'s `playlist_id`; or
+        - Calculate offline based on this explanation: <https://webapps.stackexchange.com/a/101153/19794>
+          You just need to change the first `UC` chars to `UU` on channel_id
+        """
         params = {"part": "contentDetails,snippet", "channelId": channel_id}
         for item in self.paginate("playlists", params):
             yield parse_playlist_data(item)
 
     def playlist_videos(self, playlist_id: str):
-        """Get list of videos from a playlist (not all video parameters will be filled, check `parse_video_data`)"""
+        """Get list of videos from a playlist (not all video parameters will be filled, check `parse_video_data`)
+
+        WARNING: a playlist can contain videos from other channels, check `channel_id` vs `playlist_channel_id` keys of
+        each video."""
         params = {"part": "contentDetails,snippet,status", "playlistId": playlist_id}
         # TODO: should add `order`?
         for item in self.paginate("playlistItems", params):
@@ -567,7 +578,9 @@ class YouTube:
         video_license: str=None,
         video_category_id=None,
     ):
-        """Get list of videos from a search (not all video parameters will be filled, check `parse_video_data`)"""
+        """Get list of videos from a search (not all video parameters will be filled, check `parse_video_data`)
+
+        WARNING: each search request consumes 100 units of your quota (max daily is 10k, so 1% each)!"""
         # https://developers.google.com/youtube/v3/docs/search/list
         # TODO: add option to search for: video, channel, playlist or everything
         params = {

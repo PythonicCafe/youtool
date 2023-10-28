@@ -6,11 +6,13 @@ from pathlib import Path
 from typing import List
 from urllib.parse import urljoin, urlparse
 
-import isodate
+import isodate  # TODO: implement duration parser to remove dependency?
 import requests
 
 REGEXP_CHANNEL_ID = re.compile('"externalId":"([^"]+)"')
 REGEXP_LOCATION_RADIUS = re.compile(r"^[0-9.]+(?:m|km|ft|mi)$")
+REGEXP_NAIVE_DATETIME = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}[T ][0-9]{2}:[0-9]{2}:[0-9]{2}$")
+REGEXP_DATETIME_MILLIS = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}[T ][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+")
 
 
 def cleanup(data):
@@ -91,7 +93,7 @@ def parse_decimal(value):
     return Decimal(value)
 
 
-def parse_datetime(value):
+def parse_datetime(value, default_utc_offset="+00:00"):
     """
     >>> str(parse_datetime(''))
     'None'
@@ -99,13 +101,24 @@ def parse_datetime(value):
     'None'
     >>> parse_datetime('2022-01-15T01:02:03Z')
     datetime.datetime(2022, 1, 15, 1, 2, 3, tzinfo=datetime.timezone.utc)
+    >>> parse_datetime('2022-01-15T01:02:03')
+    datetime.datetime(2022, 1, 15, 1, 2, 3, tzinfo=datetime.timezone.utc)
+    >>> parse_datetime('2022-01-15T01:02:03', default_utc_offset="-03:00")
+    datetime.datetime(2022, 1, 15, 1, 2, 3, tzinfo=datetime.timezone(datetime.timedelta(days=-1, seconds=75600)))
+    >>> parse_datetime('2023-03-08T18:35:28.266113+00:00')
+    datetime.datetime(2023, 3, 8, 18, 35, 28, 266113, tzinfo=datetime.timezone.utc)
     """
     value = str(value or "").strip()
     if not value:
         return None
+    elif REGEXP_NAIVE_DATETIME.match(value):
+        value = f"{value}{default_utc_offset}"
     if value[-1] == "Z":
         value = value[:-1] + "+00:00"
-    return datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S%z")
+    if REGEXP_DATETIME_MILLIS.match(value):
+        return datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S.%f%z")
+    else:
+        return datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S%z")
 
 
 def parse_timestamp(value):
@@ -337,11 +350,11 @@ class YouTube:
 
         response = self.session.get(url, params=final_params)
         data = response.json()
+        # TODO: implement quota
         while "error" in data and 400 <= data["error"]["code"] < 500:
-            try:
-                self.__current_key = self.__api_keys.pop(0)
-            except IndexError:
+            if not self.__api_keys:  # Tried all!
                 raise RuntimeError(f"Too many 4xx errors, tried all YouTube keys ({data['error']['errors']})")
+            self.__current_key = self.__api_keys.pop(0)
             self.__params["key"] = final_params["key"] = self.__current_key
             response = self.session.get(url, params=final_params)
             data = response.json()
@@ -412,7 +425,9 @@ class YouTube:
             yield parse_video_data(item)
 
     def channels_infos(self, channels_ids: List[str]):
+        """Get channel information, like title, subscribers etc."""
         base_params = {"part": "snippet,contentDetails,statistics"}
+        # TODO: move to brandingSettings,contentDetails,contentOwnerDetails,id,localizations,snippet,statistics,status,topicDetails
         for batch in ipartition(channels_ids, 50):
             data = self.request("channels", params={**base_params, "id": ",".join(batch)})
             if not isinstance(data, dict) or not data.get("items"):
@@ -425,12 +440,22 @@ class YouTube:
                 yield result.get(channel_id)
 
     def channel_playlists(self, channel_id: str):
+        """List channel playlists (but not the main - "uploads" - check below for more details)
+
+        To get the main ("uploads") playlist for a channel, you have two options:
+        - Get `channels_infos`'s `playlist_id`; or
+        - Calculate offline based on this explanation: <https://webapps.stackexchange.com/a/101153/19794>
+          You just need to change the first `UC` chars to `UU` on channel_id
+        """
         params = {"part": "contentDetails,snippet", "channelId": channel_id}
         for item in self.paginate("playlists", params):
             yield parse_playlist_data(item)
 
     def playlist_videos(self, playlist_id: str):
-        """Get list of videos from a playlist (not all video parameters will be filled, check `parse_video_data`)"""
+        """Get list of videos from a playlist (not all video parameters will be filled, check `parse_video_data`)
+
+        WARNING: a playlist can contain videos from other channels, check `channel_id` vs `playlist_channel_id` keys of
+        each video."""
         params = {"part": "contentDetails,snippet,status", "playlistId": playlist_id}
         # TODO: should add `order`?
         for item in self.paginate("playlistItems", params):
@@ -530,30 +555,32 @@ class YouTube:
 
     def video_search(
         self,
-        term=None,
-        region_code=None,
-        language_code=None,
-        since=None,
-        until=None,
-        order="date",
-        channel_id=None,
+        term: str=None,
+        region_code: str=None,
+        language_code: str=None,
+        since: datetime.datetime=None,
+        until: datetime.datetime=None,
+        order: str="date",
+        channel_id: str=None,
         channel_type=None,
         event_type=None,
         topic=None,
         video_type=None,
-        location=None,
-        location_radius=None,
-        safe_search=None,
-        video_caption=None,
-        video_definition=None,
-        video_dimension=None,
-        video_embeddable=None,
-        video_paid_product_placement=None,
-        video_syndicated=None,
-        video_license=None,
+        location: tuple=None,
+        location_radius: str=None,
+        safe_search: str=None,
+        video_caption: str=None,
+        video_definition: str=None,
+        video_dimension: str=None,
+        video_embeddable: str=None,
+        video_paid_product_placement: str=None,
+        video_syndicated: str=None,
+        video_license: str=None,
         video_category_id=None,
     ):
-        """Get list of videos from a search (not all video parameters will be filled, check `parse_video_data`)"""
+        """Get list of videos from a search (not all video parameters will be filled, check `parse_video_data`)
+
+        WARNING: each search request consumes 100 units of your quota (max daily is 10k, so 1% each)!"""
         # https://developers.google.com/youtube/v3/docs/search/list
         # TODO: add option to search for: video, channel, playlist or everything
         params = {
@@ -569,9 +596,9 @@ class YouTube:
         if language_code is not None:  # ISO 639-1 language code
             params["relevanceLanguage"] = language_code
         if since is not None:
-            params["publishedAfter"] = str(since)  # TODO: parse/check?
+            params["publishedAfter"] = since.isoformat()
         if until is not None:
-            params["publishedBefore"] = str(until)  # TODO: parse/check?
+            params["publishedBefore"] = until.isoformat()
         if order not in ("date", "rating", "relevance", "title", "videoCount", "viewCount"):
             raise ValueError(f"Unknown order type: {repr(order)}")
         if channel_id is not None:

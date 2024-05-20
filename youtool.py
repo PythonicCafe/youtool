@@ -355,6 +355,8 @@ class YouTube:
     }
 
     def __init__(self, api_keys: List[str], disable_ipv6=False):
+        if isinstance(api_keys, str):  # Just one API key was passed
+            api_keys = [api_keys]
         self.__api_keys = list(api_keys)  # Consume and make a copy (it'll be `pop`ed)
         self.__current_key = self.__api_keys.pop(0)
         self.__params = {"key": self.__current_key, "maxResults": 50}  # 50 is the max for YouTube Data API v3

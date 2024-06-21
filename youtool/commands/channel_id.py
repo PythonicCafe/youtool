@@ -1,9 +1,9 @@
-import os
 import csv
 
 from typing import List
 from datetime import datetime
 from io import StringIO
+from pathlib import Path
 
 from youtool import YouTube
 
@@ -44,11 +44,14 @@ class ChannelId(Command):
         url_column_name = url_column_name or ChannelId.URL_COLUMN_NAME
         urls = []
 
-        if not os.path.isfile(file_path):
-            raise Exception(f"Invalid file path: {file_path}")
+        file_path = Path(file_path)
+        if not file_path.is_file():
+            raise FileNotFoundError(f"Invalid file path: {file_path}")
 
-        with open(file_path, 'r', newline='') as csv_file:
+        with file_path.open('r', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
+            if url_column_name not in reader.fieldnames:
+                raise Exception(f"Column {url_column_name} not found on {file_path}")
             for row in reader:
                 urls.append(row.get(url_column_name))
         return urls
@@ -69,17 +72,19 @@ class ChannelId(Command):
         """
         channel_id_column_name = channel_id_column_name or ChannelId.CHANNEL_ID_COLUMN_NAME
 
-        if output_file_path and os.path.isdir(output_file_path):
-            timestamp = datetime.now().strftime("%M%S%f")
-            output_file_path = os.path.join(output_file_path, f"channel_ids_{timestamp}.csv")
+        if output_file_path:
+            output_path = Path(output_file_path)
+            if output_path.is_dir():
+                timestamp = datetime.now().strftime("%M%S%f")
+                output_file_path = output_path / f"channel_ids_{timestamp}.csv"
 
-        with (output_file_path and open(output_file_path, 'w', newline='') or StringIO()) as csv_file:
+        with (Path(output_file_path).open('w', newline='') if output_file_path else StringIO()) as csv_file:
             writer = csv.DictWriter(csv_file, fieldnames=[channel_id_column_name])
             writer.writeheader()
             writer.writerows(
                 [{channel_id_column_name: channel_id} for channel_id in channels_ids]
             )
-            return output_file_path or csv_file.getvalue()
+            return str(output_file_path) if output_file_path else csv_file.getvalue()
 
     @staticmethod
     def execute(**kwargs) -> str:
@@ -116,10 +121,11 @@ class ChannelId(Command):
         url_column_name = kwargs.get("url_column_name")
         id_column_name = kwargs.get("id_column_name")
 
-        urls = urls or ChannelId.urls_from_file(urls_file_path, url_column_name)
+        if urls_file_path and not urls:
+            urls = ChannelId.urls_from_file(urls_file_path, url_column_name)
 
         if not urls:
-            raise Exception("username or url required on channel-id command")
+            raise Exception("Either 'username' or 'url' must be provided for the channel-id command")
 
         youtube = YouTube([api_key], disable_ipv6=True)
 

@@ -5,10 +5,21 @@ from commands import COMMANDS
 
 
 def main():
-    """main docstring"""
-    parser = argparse.ArgumentParser(description="Youtube CLI Tool")
+    """
+    The main function for the CLI tool.
+
+    This function sets up the argument parser, including the API key and command-specific subparsers,
+    then parses the command-line arguments. It retrieves the YouTube API key from either the 
+    command-line argument or the environment variable 'YOUTUBE_API_KEY'. If the API key is not provided,
+    it raises an error. Finally, it executes the appropriate command based on the parsed arguments.
+
+    Raises:
+        argparse.ArgumentError: If the YouTube API key is not provided.
+        Exception: If there is an error during the execution of the command, it is caught and raised as an argparse error.
+    """
+    parser = argparse.ArgumentParser(description="CLI Tool for managing YouTube videos add playlists")
     parser.add_argument("--api-key", type=str, help="YouTube API Key", dest="api_key")
-    subparsers = parser.add_subparsers(required=True, dest="command", title="Command", help="Comando a ser executado")
+    subparsers = parser.add_subparsers(required=True, dest="command", title="Command", help="Command to be executed")
 
     # cmd_channel_info = subparsers.add_parser("channel-info", help="Get channel info from a list of IDs (or CSV filename with IDs inside), generate CSV output (same schema for `channel` dicts)")
     # cmd_video_info = subparsers.add_parser("video-info", help="Get video info from a list of IDs or URLs (or CSV filename with URLs/IDs inside), generate CSV output (same schema for `video` dicts)")

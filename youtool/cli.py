@@ -1,7 +1,7 @@
 import argparse
 import os
 
-from commands import COMMANDS
+from youtool.commands import COMMANDS
 
 
 def main():
@@ -46,7 +46,7 @@ def main():
     except Exception as error:
         if args.debug:
             raise error
-            parser.error(error)
+        parser.error(error)
 
 
 if __name__ == "__main__":

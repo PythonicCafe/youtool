@@ -1,6 +1,6 @@
 import csv
 
-from typing import Self
+from pathlib import Path
 
 from youtool import YouTube
 
@@ -24,7 +24,7 @@ class ChannelId(Command):
     CHANNEL_ID_COLUMN_NAME: str = "channel_id"
 
     @classmethod
-    def execute(cls: Self, **kwargs) -> str:
+    def execute(cls, **kwargs) -> str:
         """
         Execute the channel-id command to fetch YouTube channel IDs from URLs and save them to a CSV file.
 
@@ -60,7 +60,7 @@ class ChannelId(Command):
 
         if urls_file_path and not urls:
             urls = cls.data_from_csv(
-                file_path=urls_file_path,
+                file_path=Path(urls_file_path),
                 data_column_name=url_column_name or cls.URL_COLUMN_NAME
             )
 

@@ -1,7 +1,7 @@
 import csv
 import argparse
 
-from typing import List, Dict, Any, Self
+from typing import List, Dict, Any, Optional
 from io import StringIO
 from pathlib import Path
 from datetime import datetime
@@ -19,7 +19,7 @@ class Command():
     arguments: List[Dict[str, Any]]
 
     @classmethod
-    def generate_parser(cls: Self, subparsers: argparse._SubParsersAction):
+    def generate_parser(cls, subparsers: argparse._SubParsersAction):
         """
         Creates a parser for the command and adds it to the subparsers.
 
@@ -32,7 +32,7 @@ class Command():
         return subparsers.add_parser(cls.name, help=cls.__doc__)
 
     @classmethod
-    def parse_arguments(cls: Self, subparsers: argparse._SubParsersAction) -> None:
+    def parse_arguments(cls, subparsers: argparse._SubParsersAction) -> None:
         """
         Parses the arguments for the command and sets the command's execute method as the default function to call.
 
@@ -47,7 +47,7 @@ class Command():
         parser.set_defaults(func=cls.execute)
 
     @classmethod
-    def execute(cls: Self, arguments: argparse.Namespace):
+    def execute(cls, arguments: argparse.Namespace):
         """
         Executes the command.
 
@@ -59,36 +59,41 @@ class Command():
         raise NotImplementedError()
 
     @staticmethod
-    def data_from_csv(file_path: str, data_column_name: str = None) -> List[str]:
+    def data_from_csv(file_path: Path, data_column_name: Optional[str] = None) -> List[str]:
         """
         Extracts a list of URLs from a specified CSV file.
 
-        Args: file_path (str): The path to the CSV file containing the URLs.
-            data_column_name (str, optional): The name of the column in the CSV file that contains the URLs.
-                                            If not provided, it defaults to `ChannelId.URL_COLUMN_NAME`.
+        Args:
+            file_path: The path to the CSV file containing the URLs.
+            data_column_name: The name of the column in the CSV file that contains the URLs.
+                                If not provided, it defaults to `ChannelId.URL_COLUMN_NAME`.
 
         Returns:
-            List[str]: A list of URLs extracted from the specified CSV file.
+            A list of URLs extracted from the specified CSV file.
 
         Raises:
             Exception: If the file path is invalid or the file cannot be found.
         """
         data = []
 
-        file_path = Path(file_path)
         if not file_path.is_file():
             raise FileNotFoundError(f"Invalid file path: {file_path}")
 
         with file_path.open('r', newline='') as csv_file:
             reader = csv.DictReader(csv_file)
-            if data_column_name not in reader.fieldnames:
+            fieldnames = reader.fieldnames
+
+            if fieldnames is None:
+                raise ValueError("Fieldnames is None")
+            
+            if data_column_name not in fieldnames:
                 raise Exception(f"Column {data_column_name} not found on {file_path}")
             for row in reader:
                 data.append(row.get(data_column_name))
         return data
 
     @classmethod
-    def data_to_csv(cls: Self, data: List[Dict], output_file_path: str = None) -> str:
+    def data_to_csv(cls, data: List[Dict], output_file_path: Optional[str] = None) -> str:
         """
         Converts a list of channel IDs into a CSV file.
 

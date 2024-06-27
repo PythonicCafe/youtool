@@ -47,7 +47,7 @@ class Command():
         parser.set_defaults(func=cls.execute)
 
     @classmethod
-    def execute(cls, arguments: argparse.Namespace):
+    def execute(cls, **kwargs) -> str:
         """
         Executes the command.
 
@@ -89,7 +89,9 @@ class Command():
             if data_column_name not in fieldnames:
                 raise Exception(f"Column {data_column_name} not found on {file_path}")
             for row in reader:
-                data.append(row.get(data_column_name))
+                value = row.get(data_column_name)
+                if value is not None:
+                    data.append(str(value))
         return data
 
     @classmethod

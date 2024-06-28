@@ -1,4 +1,3 @@
-import csv
 
 from pathlib import Path
 
@@ -8,9 +7,7 @@ from .base import Command
 
 
 class ChannelId(Command):
-    """
-    Get channel IDs from a list of URLs (or CSV filename with URLs inside), generate CSV output (just the IDs)
-    """
+    """Get channel IDs from a list of URLs (or CSV filename with URLs inside), generate CSV output (just the IDs)."""
     name = "channel-id"
     arguments = [
         {"name": "--urls", "type": str, "help": "Channels urls", "nargs": "*"},
@@ -24,9 +21,8 @@ class ChannelId(Command):
     CHANNEL_ID_COLUMN_NAME: str = "channel_id"
 
     @classmethod
-    def execute(cls, **kwargs) -> str:
-        """
-        Execute the channel-id command to fetch YouTube channel IDs from URLs and save them to a CSV file.
+    def execute(cls, **kwargs) -> str:  # noqa: D417
+        """Execute the channel-id command to fetch YouTube channel IDs from URLs and save them to a CSV file.
 
         This method retrieves YouTube channel IDs from a list of provided URLs or from a file containing URLs.
         It then saves these channel IDs to a CSV file if an output file path is specified.

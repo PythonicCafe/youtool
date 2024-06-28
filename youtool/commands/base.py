@@ -7,9 +7,8 @@ from pathlib import Path
 from datetime import datetime
 
 
-class Command():
-    """
-    A base class for commands to inherit from, following a specific structure.
+class Command:
+    """A base class for commands to inherit from, following a specific structure.
     
     Attributes:
         name (str): The name of the command.
@@ -20,8 +19,7 @@ class Command():
 
     @classmethod
     def generate_parser(cls, subparsers: argparse._SubParsersAction):
-        """
-        Creates a parser for the command and adds it to the subparsers.
+        """Creates a parser for the command and adds it to the subparsers.
 
         Args:
             subparsers (argparse._SubParsersAction): The subparsers action to add the parser to.
@@ -33,8 +31,7 @@ class Command():
 
     @classmethod
     def parse_arguments(cls, subparsers: argparse._SubParsersAction) -> None:
-        """
-        Parses the arguments for the command and sets the command's execute method as the default function to call.
+        """Parses the arguments for the command and sets the command's execute method as the default function to call.
 
         Args:
             subparsers (argparse._SubParsersAction): The subparsers action to add the parser to.
@@ -47,9 +44,8 @@ class Command():
         parser.set_defaults(func=cls.execute)
 
     @classmethod
-    def execute(cls, **kwargs) -> str:
-        """
-        Executes the command.
+    def execute(cls, **kwargs) -> str:  # noqa: D417
+        """Executes the command.
 
         This method should be overridden by subclasses to define the command's behavior.
 
@@ -60,8 +56,7 @@ class Command():
 
     @staticmethod
     def data_from_csv(file_path: Path, data_column_name: Optional[str] = None) -> List[str]:
-        """
-        Extracts a list of URLs from a specified CSV file.
+        """Extracts a list of URLs from a specified CSV file.
 
         Args:
             file_path: The path to the CSV file containing the URLs.
@@ -96,13 +91,12 @@ class Command():
 
     @classmethod
     def data_to_csv(cls, data: List[Dict], output_file_path: Optional[str] = None) -> str:
-        """
-        Converts a list of channel IDs into a CSV file.
+        """Converts a list of channel IDs into a CSV file.
 
         Parameters:
         channels_ids (List[str]): List of channel IDs to be written to the CSV.
         output_file_path (str, optional): Path to the file where the CSV will be saved. If not provided, the CSV will be returned as a string.
-        channel_id_column_name (str, optional): Name of the column in the CSV that will contain the channel IDs. 
+        channel_id_column_name (str, optional): Name of the column in the CSV that will contain the channel IDs.
                                                 If not provided, the default value defined in ChannelId.CHANNEL_ID_COLUMN_NAME will be used.
 
         Returns:

@@ -5,8 +5,7 @@ from commands import COMMANDS
 
 
 def main():
-    """
-    Main function for the YouTube CLI Tool.
+    """Main function for the YouTube CLI Tool.
 
     This function sets up the argument parser for the CLI tool, including options for the YouTube API key and
     command-specific subparsers. It then parses the command-line arguments, retrieving the YouTube API key
@@ -19,7 +18,6 @@ def main():
     Raises:
         argparse.ArgumentError: If the YouTube API key is not provided.
         argparse.ArgumentError: If there is an error during the execution of the command.
-
     """
     parser = argparse.ArgumentParser(description="CLI Tool for managing YouTube videos add playlists")
     parser.add_argument("--api-key", type=str, help="YouTube API Key", dest="api_key")

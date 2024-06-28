@@ -6,5 +6,5 @@ COMMANDS = [
 ]
 
 __all__ = [
-    COMMANDS, ChannelId
+    "COMMANDS", "ChannelId"
 ]

@@ -44,7 +44,7 @@ class Command:
         parser.set_defaults(func=cls.execute)
 
     @classmethod
-    def execute(cls, **kwargs) -> str:  # noqa: D417
+    def execute(cls, **kwargs) -> str:
         """Executes the command.
 
         This method should be overridden by subclasses to define the command's behavior.

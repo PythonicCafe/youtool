@@ -21,7 +21,7 @@ class ChannelId(Command):
     CHANNEL_ID_COLUMN_NAME: str = "channel_id"
 
     @classmethod
-    def execute(cls, **kwargs) -> str:
+    def execute(cls, **kwargs) -> str:  # noqa: D417
         """Execute the channel-id command to fetch YouTube channel IDs from URLs and save them to a CSV file.
 
         This method retrieves YouTube channel IDs from a list of provided URLs or from a file containing URLs.

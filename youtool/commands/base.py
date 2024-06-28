@@ -44,7 +44,7 @@ class Command:
         parser.set_defaults(func=cls.execute)
 
     @classmethod
-    def execute(cls, **kwargs) -> str:
+    def execute(cls, **kwargs) -> str:  # noqa: D417
         """Executes the command.
 
         This method should be overridden by subclasses to define the command's behavior.
@@ -96,7 +96,7 @@ class Command:
         Parameters:
         channels_ids (List[str]): List of channel IDs to be written to the CSV.
         output_file_path (str, optional): Path to the file where the CSV will be saved. If not provided, the CSV will be returned as a string.
-        channel_id_column_name (str, optional): Name of the column in the CSV that will contain the channel IDs. 
+        channel_id_column_name (str, optional): Name of the column in the CSV that will contain the channel IDs.
                                                 If not provided, the default value defined in ChannelId.CHANNEL_ID_COLUMN_NAME will be used.
 
         Returns:

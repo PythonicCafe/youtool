@@ -18,26 +18,15 @@ def main():
 
     args = parser.parse_args()
 
-    if args.command == "channel-id":
-        print(f"Implement: {args.command}")  # TODO: implement
-
-    elif args.command == "channel-info":
-        print(f"Implement: {args.command}")  # TODO: implement
-
-    elif args.command == "video-info":
-        print(f"Implement: {args.command}")  # TODO: implement
-
-    elif args.command == "video-search":
-        print(f"Implement: {args.command}")  # TODO: implement
-
-    elif args.command == "video-comments":
-        print(f"Implement: {args.command}")  # TODO: implement
-
-    elif args.command == "video-livechat":
-        print(f"Implement: {args.command}")  # TODO: implement
-
-    elif args.command == "video-transcription":
-        print(f"Implement: {args.command}")  # TODO: implement
+    if not args.api_key:
+        parser.error("YouTube API Key is required")
+    
+    try:
+        print(args.func(**args.__dict__))
+    except Exception as error:
+        if args.debug:
+            raise error
+        parser.error(error)
 
 
 if __name__ == "__main__":

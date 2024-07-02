@@ -2,11 +2,6 @@ import csv
 import argparse
 import pytest
 
-<<<<<<< HEAD
-=======
-from io import StringIO
-from datetime import datetime
->>>>>>> fdb1fc6 (Add test for base file)
 from pathlib import Path
 from unittest.mock import MagicMock, patch, mock_open
 from youtool.commands import Command

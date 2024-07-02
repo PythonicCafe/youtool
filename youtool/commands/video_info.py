@@ -93,14 +93,21 @@ class VideoInfo(Command):
             raise Exception("Either 'ids' or 'urls' must be provided for the video-info command")
 
         youtube = YouTube([api_key], disable_ipv6=True)
+        
+        videos_infos = []
 
-        video_infos = list(youtube.videos_infos(ids))
+        if ids:
+            videos_infos += list(youtube.videos_infos(ids))
+        if urls:
+           # TODO: add get videos_infos using urls to youtool
+           raise NotImplementedError("videos_infos by url not implemented yet")
+
 
         return cls.data_to_csv(
             data=[
                 VideoInfo.filter_fields(
                     video_info, info_columns
-                ) for video_info in video_infos
+                ) for video_info in videos_infos
             ],
             output_file_path=output_file_path
         )

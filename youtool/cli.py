@@ -21,7 +21,7 @@ def main():
     """
     parser = argparse.ArgumentParser(description="CLI Tool for managing YouTube videos add playlists")
     parser.add_argument("--api-key", type=str, help="YouTube API Key", dest="api_key")
-    parser.add_argument("--debug", type=bool, help="Debug mode", dest="debug")
+    parser.add_argument("--debug", default=False, action="store_true", help="Debug mode", dest="debug")
     
     subparsers = parser.add_subparsers(required=True, dest="command", title="Command", help="Command to be executed")
 

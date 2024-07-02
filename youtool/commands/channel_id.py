@@ -1,6 +1,5 @@
-import csv
 
-from typing import Self
+from pathlib import Path
 
 from youtool import YouTube
 
@@ -8,9 +7,7 @@ from .base import Command
 
 
 class ChannelId(Command):
-    """
-    Get channel IDs from a list of URLs (or CSV filename with URLs inside), generate CSV output (just the IDs)
-    """
+    """Get channel IDs from a list of URLs (or CSV filename with URLs inside), generate CSV output (just the IDs)."""
     name = "channel-id"
     arguments = [
         {"name": "--urls", "type": str, "help": "Channels urls", "nargs": "*"},
@@ -24,9 +21,8 @@ class ChannelId(Command):
     CHANNEL_ID_COLUMN_NAME: str = "channel_id"
 
     @classmethod
-    def execute(cls: Self, **kwargs) -> str:
-        """
-        Execute the channel-id command to fetch YouTube channel IDs from URLs and save them to a CSV file.
+    def execute(cls, **kwargs) -> str:  # noqa: D417
+        """Execute the channel-id command to fetch YouTube channel IDs from URLs and save them to a CSV file.
 
         This method retrieves YouTube channel IDs from a list of provided URLs or from a file containing URLs.
         It then saves these channel IDs to a CSV file if an output file path is specified.
@@ -58,14 +54,7 @@ class ChannelId(Command):
         url_column_name = kwargs.get("url_column_name")
         id_column_name = kwargs.get("id_column_name")
 
-        if urls_file_path and not urls:
-            urls = cls.data_from_csv(
-                file_path=urls_file_path,
-                data_column_name=url_column_name or cls.URL_COLUMN_NAME
-            )
-
-        if not urls:
-            raise Exception("Either 'username' or 'url' must be provided for the channel-id command")
+        urls = cls.resolve_urls(urls, urls_file_path, url_column_name)
 
         youtube = YouTube([api_key], disable_ipv6=True)
 
@@ -76,10 +65,22 @@ class ChannelId(Command):
         result = cls.data_to_csv(
             data=[
                 {
-                    (id_column_name or cls.CHANNEL_ID_COLUMN_NAME): channel_id for channel_id in channels_ids
-                }
+                    (id_column_name or cls.CHANNEL_ID_COLUMN_NAME): channel_id
+                } for channel_id in channels_ids
             ],
             output_file_path=output_file_path
         )
 
         return result
+
+    @classmethod
+    def resolve_urls(cls, urls, urls_file_path, url_column_name):
+        if urls_file_path and not urls:
+            urls = cls.data_from_csv(
+                file_path=Path(urls_file_path),
+                data_column_name=url_column_name or cls.URL_COLUMN_NAME
+            )
+
+        if not urls:
+            raise Exception("Either 'username' or 'url' must be provided for the channel-id command")
+        return urls

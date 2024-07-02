@@ -1,6 +1,6 @@
+from .base import Command
 from .channel_id import ChannelId
 from .channel_info import ChannelInfo
-
 
 COMMANDS = [
     ChannelId,
@@ -8,5 +8,5 @@ COMMANDS = [
 ]
 
 __all__ = [
-    COMMANDS, ChannelId, ChannelInfo
+    "Command", "COMMANDS", "ChannelId", "ChannelInfo"
 ]

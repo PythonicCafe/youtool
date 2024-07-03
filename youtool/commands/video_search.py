@@ -73,7 +73,7 @@ class VideoSearch(Command):
         api_key = kwargs.get("api_key")
         full_info = kwargs.get("full_info", False)
 
-        info_columns = VideoSearch.FULL_INFO_COLUMNS if full_info else VideoSearch.SIMPLE_INFO_COLUMNS
+        info_columns = VideoSearch.FULL_INFO_COLUMNS if full_info else VideoSearch.INFO_COLUMNS
 
         if input_file_path:
             with open(input_file_path, mode='r') as infile:

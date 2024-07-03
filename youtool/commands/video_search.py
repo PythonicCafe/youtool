@@ -66,8 +66,8 @@ class VideoSearch(Command):
         Raises:
             Exception: If neither ids, urls, nor input_file_path is provided.
         """
-        ids = kwargs.get("ids")
-        urls = kwargs.get("urls")
+        ids = kwargs.get("ids", [])
+        urls = kwargs.get("urls", [])
         input_file_path = kwargs.get("input_file_path")
         output_file_path = kwargs.get("output_file_path")
         api_key = kwargs.get("api_key")
@@ -89,13 +89,12 @@ class VideoSearch(Command):
 
         youtube = YouTube([api_key], disable_ipv6=True)
         
-        videos_infos = []
-
-        if ids:
-            videos_infos += list(youtube.videos_infos(ids))
         if urls:
-            # TODO: add get videos_infos using urls to youtool
-            raise NotImplementedError("videos_infos by url not implemented yet")
+            ids += [cls.video_id_from_url(url) for url in urls]
+
+        # Remove duplicated
+        ids = list(set(ids))
+        videos_infos = list(youtube.videos_infos([_id for _id in ids if _id]))
                                      
         return cls.data_to_csv(
             data=[

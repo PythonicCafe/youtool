@@ -111,11 +111,7 @@ def test_data_from_csv_column_not_found(mock_csv_file):
             file_path = Path("tests/resources/csv_column_not_found.csv")
             with pytest.raises(Exception) as exc_info:
                 Command.data_from_csv(file_path, "NonExistentColumn")
-<<<<<<< HEAD
             assert "Column NonExistentColumn not found on tests/resources/csv_column_not_found.csv" in str(exc_info.value)
-=======
-            assert f"Column NonExistentColumn not found on {file_path}" in str(exc_info.value)
->>>>>>> c347dd2 (Add update)
 
 
 @pytest.fixture

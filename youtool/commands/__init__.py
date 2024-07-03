@@ -2,13 +2,15 @@ from .base import Command
 from .channel_id import ChannelId
 from .channel_info import ChannelInfo
 from .video_info import VideoInfo
+from .video_search import VideoSearch
 
 COMMANDS = [
     ChannelId,
     ChannelInfo,
-    VideoInfo
+    VideoInfo,
+    VideoSearch
 ]
 
 __all__ = [
-    COMMANDS, ChannelId, ChannelInfo, VideoInfo
+    "Command", "COMMANDS", "ChannelId", "ChannelInfo", "VideoInfo", "VideoSearch"
 ]

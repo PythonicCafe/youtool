@@ -5,6 +5,7 @@ from typing import List, Dict, Any, Optional
 from io import StringIO
 from pathlib import Path
 from datetime import datetime
+from urllib.parse import urlparse, parse_qsl
 
 
 class Command:
@@ -16,6 +17,12 @@ class Command:
     """
     name: str
     arguments: List[Dict[str, Any]]
+
+    @staticmethod
+    def video_id_from_url(video_url: str) -> Optional[str]:
+        parsed_url = urlparse(video_url)
+        parsed_url_query = dict(parse_qsl(parsed_url.query))
+        return parsed_url_query.get("v")
 
     @classmethod
     def generate_parser(cls, subparsers: argparse._SubParsersAction):

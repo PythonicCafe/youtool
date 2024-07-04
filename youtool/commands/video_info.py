@@ -24,23 +24,6 @@ class VideoInfo(Command):
         "id", "title", "description", "published_at", "view_count", "like_count", "comment_count"
     ]
 
-    @staticmethod
-    def filter_fields(video_info: Dict, info_columns: Optional[List] = None) -> Dict:
-        """Filters the fields of a dictionary containing video information based on specified columns.
-
-        Args:
-            video_info (Dict): A dictionary containing video information.
-            info_columns (Optional[List], optional): A list specifying which fields to include in the filtered output. 
-            If None, returns the entire video_info dictionary. Defaults to None.
-
-        Returns:
-            A dictionary containing only the fields specified in info_columns (if provided) 
-            or the entire video_info dictionary if info_columns is None.
-        """
-        return {
-            field: value for field, value in video_info.items() if field in info_columns
-        } if info_columns else video_info
-
     @classmethod
     def execute(cls: Self, **kwargs) -> str:
         """

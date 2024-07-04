@@ -4,15 +4,20 @@ from .channel_info import ChannelInfo
 from .video_info import VideoInfo
 from .video_search import VideoSearch
 from .video_comments import VideoComments
+from .video_livechat import VideoLiveChat
+from .video_transcription import VideoTranscription
 
 COMMANDS = [
     ChannelId,
     ChannelInfo,
     VideoInfo,
     VideoSearch,
-    VideoComments
+    VideoComments,
+    VideoLiveChat,
+    VideoTranscription
 ]
 
 __all__ = [
-    "Command", "COMMANDS", "ChannelId", "ChannelInfo", "VideoInfo", "VideoSearch", "VideoComments"
+    "Command", "COMMANDS", "ChannelId", "ChannelInfo", "VideoInfo", "VideoSearch", "VideoComments",
+    "VideoLiveChat", "VideoTranscription"
 ]

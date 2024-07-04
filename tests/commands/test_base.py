@@ -2,8 +2,6 @@ import csv
 import argparse
 import pytest
 
-from io import StringIO
-from datetime import datetime
 from pathlib import Path
 from unittest.mock import MagicMock, patch, mock_open
 from youtool.commands import Command

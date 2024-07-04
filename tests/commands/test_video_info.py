@@ -15,10 +15,10 @@ def youtube_mock(mocker, mock_video_info):
 
 @pytest.fixture
 def mock_video_info():
-        return [
-            {"id": "tmrhPou85HQ", "title": "Title 1", "description": "Description 1", "published_at": "2021-01-01", "view_count": 100, "like_count": 10, "comment_count": 5},
-            {"id": "qoI_x9fylaw", "title": "Title 2", "description": "Description 2", "published_at": "2021-02-01", "view_count": 200, "like_count": 20, "comment_count": 10} 
-        ]
+    return [
+        {"id": "tmrhPou85HQ", "title": "Title 1", "description": "Description 1", "published_at": "2021-01-01", "view_count": 100, "like_count": 10, "comment_count": 5},
+        {"id": "qoI_x9fylaw", "title": "Title 2", "description": "Description 2", "published_at": "2021-02-01", "view_count": 200, "like_count": 20, "comment_count": 10} 
+    ]
 
 def test_execute_with_ids_and_urls(youtube_mock, mocker, tmp_path, mock_video_info):
     ids = ["tmrhPou85HQ", "qoI_x9fylaw"]

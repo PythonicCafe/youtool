@@ -31,7 +31,10 @@ def test_filter_fields():
     assert filtered_info == expected_result, f"Expected {expected_result}, but got {filtered_info}"
 
 
-def test_channel_ids_from_urls_and_usernames(mocker, channels_urls, usernames):
+def test_channel_ids_from_urls_and_usernames(mocker):
+    urls = ["https://www.youtube.com/@Turicas/featured", "https://www.youtube.com/c/PythonicCaf%C3%A9"]
+    usernames = ["Turicas", "PythonicCafe"]
+
     ids_from_urls_mock = "id_from_url"
     ids_from_usernames_mock = "id_from_username"
     youtube_mock = mocker.patch("youtool.commands.channel_info.YouTube")

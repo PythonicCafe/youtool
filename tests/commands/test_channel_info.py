@@ -31,7 +31,10 @@ def test_filter_fields():
     assert filtered_info == expected_result, f"Expected {expected_result}, but got {filtered_info}"
 
 
-def test_channel_ids_from_urls_and_usernames(mocker, channels_urls, usernames):
+def test_channel_ids_from_urls_and_usernames(mocker):
+    urls = ["https://www.youtube.com/@Turicas/featured", "https://www.youtube.com/c/PythonicCaf%C3%A9"]
+    usernames = ["Turicas", "PythonicCafe"]
+
     ids_from_urls_mock = "id_from_url"
     ids_from_usernames_mock = "id_from_username"
     youtube_mock = mocker.patch("youtool.commands.channel_info.YouTube")
@@ -44,14 +47,12 @@ def test_channel_ids_from_urls_and_usernames(mocker, channels_urls, usernames):
     youtube_mock.return_value.channel_id_from_username = channel_id_from_username_mock
     youtube_mock.return_value.channels_infos = channels_infos_mock
 
-    ChannelInfo.execute(urls=channels_urls, usernames=usernames)
+    ChannelInfo.execute(urls=urls, usernames=usernames)
 
     channel_id_from_url_mock.assert_has_calls(
-        [call(url) for url in channels_urls]
+        [call(url) for url in urls]
     )
     channel_id_from_username_mock.assert_has_calls(
         [call(username) for username in usernames]
     )
-    channels_infos_mock.assert_called_once()
-    assert ids_from_usernames_mock in channels_infos_mock.call_args.args[0]
-    assert ids_from_urls_mock in channels_infos_mock.call_args.args[0]
+    channels_infos_mock.assert_called_once_with([ids_from_urls_mock, ids_from_usernames_mock])

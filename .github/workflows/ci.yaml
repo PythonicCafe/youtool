@@ -1,0 +1,26 @@
+name: CI
+
+on: [ push, pull_request ]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4.3.0
+      with:
+        python-version: 3.11
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install poetry==1.1.15
+        poetry --version
+        poetry config experimental.new-installer false
+        poetry config virtualenvs.create false
+        poetry install -vv
+        cp .env-sample .env
+    - name: Lint
+        run: make lint
+    - name: Test
+        run: make test

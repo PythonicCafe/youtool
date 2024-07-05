@@ -2,18 +2,25 @@ import csv
 import pytest
 
 from io import StringIO
+<<<<<<< HEAD
 from unittest.mock import Mock
+=======
+from unittest.mock import Mock, call
+>>>>>>> 0e02e77 (- Add test for video_search command;)
 from datetime import datetime
 
 from youtool.commands.video_search import VideoSearch
 
 
 def test_video_search_string_output(mocker, videos_ids, videos_urls):
+<<<<<<< HEAD
     """Test the execution of the video-search command and verify the output as string.
 
     This test simulates the execution of the `VideoSearch.execute` command with a list of video IDs and URLs,
     and checks if the output is correctly formatted as a CSV string.
     """
+=======
+>>>>>>> 0e02e77 (- Add test for video_search command;)
     youtube_mock = mocker.patch("youtool.commands.video_search.YouTube")
     expected_videos_infos = [
         {
@@ -36,11 +43,14 @@ def test_video_search_string_output(mocker, videos_ids, videos_urls):
 
 
 def test_video_search_file_output(mocker, videos_ids, videos_urls, tmp_path):
+<<<<<<< HEAD
     """Test the execution of the video-search command and verify the output to a file.
 
     This test simulates the execution of the `VideoSearch.execute` command with a list of video IDs and URLs,
     and checks if the output is correctly written to a CSV file.
     """
+=======
+>>>>>>> 0e02e77 (- Add test for video_search command;)
     youtube_mock = mocker.patch("youtool.commands.video_search.YouTube")
     expected_videos_infos = [
         {
@@ -72,6 +82,7 @@ def test_video_search_file_output(mocker, videos_ids, videos_urls, tmp_path):
 
 
 def test_video_search_no_id_and_url_error():
+<<<<<<< HEAD
     """Test if the video-search command raises an exception when neither IDs nor URLs are provided.
 
     This test checks if executing the `VideoSearch.execute` command without providing IDs or URLs
@@ -80,5 +91,7 @@ def test_video_search_no_id_and_url_error():
     Assertions:
         - Assert that the raised exception matches the expected error message.
     """
+=======
+>>>>>>> 0e02e77 (- Add test for video_search command;)
     with pytest.raises(Exception, match="Either 'ids' or 'urls' must be provided"):
         VideoSearch.execute(ids=None, urls=None)

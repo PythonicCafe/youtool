@@ -80,7 +80,11 @@ class Command:
         raise NotImplementedError()
 
     @staticmethod
-    def data_from_csv(file_path: Path, data_column_name: Optional[str] = None) -> List[str]:
+    def data_from_csv(
+        file_path: Path,
+        data_column_name: Optional[str] = None,
+        raise_column_exception: bool = True
+    ) -> List[str]:
         """Extracts a list of URLs from a specified CSV file.
 
         Args:
@@ -107,7 +111,10 @@ class Command:
                 raise ValueError("Fieldnames is None")
 
             if data_column_name not in fieldnames:
-                raise Exception(f"Column {data_column_name} not found on {file_path}")
+                if raise_column_exception:
+                    raise Exception(f"Column {data_column_name} not found on {file_path}")
+                return data
+
             for row in reader:
                 value = row.get(data_column_name)
                 if value is not None:

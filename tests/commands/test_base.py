@@ -21,11 +21,17 @@ class TestCommand(Command):
 
 @pytest.fixture
 def subparsers():
+    """Fixture to create subparsers for argument parsing."""
     parser = argparse.ArgumentParser()
     return parser.add_subparsers()
 
 
 def test_generate_parser(subparsers):
+    """Test to verify the parser generation.
+
+    This test checks if the `generate_parser` method correctly generates a parser
+    for the command and sets the appropriate properties
+    """
     parser = TestCommand.generate_parser(subparsers)
 
     assert parser is not None, "Parser should not be None"
@@ -34,6 +40,11 @@ def test_generate_parser(subparsers):
 
 
 def test_parse_arguments(subparsers):
+    """Test to verify argument parsing.
+
+    This test checks if the `parse_arguments` method correctly adds the command's
+    arguments to the parser and sets the default function to the command's execute method.
+    """
     subparsers_mock = MagicMock(spec=subparsers)
 
     TestCommand.parse_arguments(subparsers_mock)
@@ -45,6 +56,11 @@ def test_parse_arguments(subparsers):
 
 
 def test_command():
+    """Test to verify that the `execute` method is implemented.
+
+    This test ensures that if a command does not implement the `execute` method,
+    a `NotImplementedError` is raised.
+    """
     class MyCommand(Command):
         pass
 
@@ -54,6 +70,7 @@ def test_command():
 
 @pytest.fixture
 def mock_csv_file():
+    """Fixture to provide mock CSV content for tests."""
 
     csv_content = """URL
     http://example.com
@@ -62,6 +79,14 @@ def mock_csv_file():
     return csv_content
 
 def test_data_from_csv_valid(mock_csv_file):
+    """Test to verify reading data from a valid CSV file.
+
+    This test checks if the `data_from_csv` method correctly reads data from a valid CSV file
+    and returns the expected list of URLs.
+
+    Args:
+        mock_csv_file (str): The mock CSV file content.
+    """
     with patch('pathlib.Path.is_file', return_value=True):
         with patch('builtins.open', mock_open(read_data=mock_csv_file)):
             data_column_name = "URL"
@@ -72,6 +97,11 @@ def test_data_from_csv_valid(mock_csv_file):
             assert result[1] == "http://example2.com"
 
 def test_data_from_csv_file_not_found():
+    """Test to verify behavior when the specified column is not found in the CSV file.
+
+    This test checks if the `data_from_csv` method raises an exception when the specified
+    column does not exist in the CSV file.
+    """
     with patch('pathlib.Path.is_file', return_value=False):
         file_path = Path("/fake/path/not_found.csv")
         with pytest.raises(FileNotFoundError):
@@ -88,12 +118,18 @@ def test_data_from_csv_column_not_found(mock_csv_file):
 
 @pytest.fixture
 def sample_data():
+    """Fixture to provide sample data for tests."""
     return [
         {"id": "123", "name": "Channel One"},
         {"id": "456", "name": "Channel Two"}
     ]
 
 def test_data_to_csv_with_output_file_path(tmp_path, sample_data):
+    """Test to verify writing data to a CSV file with an output file path specified.
+
+    This test checks if the `data_to_csv` method correctly writes the sample data to
+    a CSV file when an output file path is provided.
+    """
     output_file_path = tmp_path / "output.csv"
     
     result_path = Command.data_to_csv(sample_data, str(output_file_path))
@@ -107,6 +143,11 @@ def test_data_to_csv_with_output_file_path(tmp_path, sample_data):
         assert rows[0]["id"] == "123" and rows[1]["id"] == "456", "The IDs should match the sample data"
 
 def test_data_to_csv_without_output_file_path(sample_data):
+    """Test to verify writing data to a CSV format without an output file path specified.
+
+    This test checks if the `data_to_csv` method correctly returns the CSV content
+    as a string when no output file path is provided.
+    """
     csv_content = Command.data_to_csv(sample_data)
     
     assert "id,name" in csv_content
@@ -114,6 +155,12 @@ def test_data_to_csv_without_output_file_path(sample_data):
     assert "456,Channel Two" in csv_content
 
 def test_data_to_csv_output(tmp_path):
+    """
+    Test to verify the content of the output CSV file.
+
+    This test checks if the `data_to_csv` method writes the expected content
+    to the output CSV file.
+    """
     output_file_path = tmp_path / "output.csv"
 
     data = [

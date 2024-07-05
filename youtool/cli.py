@@ -25,9 +25,6 @@ def main():
     
     subparsers = parser.add_subparsers(required=True, dest="command", title="Command", help="Command to be executed")
 
-    # cmd_video_livechat = subparsers.add_parser("video-livechat", help="Get comments from a video ID, generate CSV output (same schema for `chat_message` dicts)")
-    # cmd_video_transcriptions = subparsers.add_parser("video-transcription", help="Download video transcriptions based on language code, path and list of video IDs or URLs (or CSV filename with URLs/IDs inside), download files to destination and report results")
-
     for command in COMMANDS:
         command.parse_arguments(subparsers)
 

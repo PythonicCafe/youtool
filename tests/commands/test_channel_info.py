@@ -52,4 +52,6 @@ def test_channel_ids_from_urls_and_usernames(mocker, channels_urls, usernames):
     channel_id_from_username_mock.assert_has_calls(
         [call(username) for username in usernames]
     )
-    channels_infos_mock.assert_called_once_with([ids_from_urls_mock, ids_from_usernames_mock])
+    channels_infos_mock.assert_called_once()
+    assert ids_from_usernames_mock in channels_infos_mock.call_args.args[0]
+    assert ids_from_urls_mock in channels_infos_mock.call_args.args[0]

@@ -8,6 +8,11 @@ from youtool.commands import VideoComments
 
 
 def test_video_comments(mocker):
+    """Test case for fetching video comments and verifying the output.
+
+    This test mocks the YouTube API to simulate fetching comments for a video,
+    then compares the generated CSV output with expected comments.
+    """
     youtube_mock = mocker.patch("youtool.commands.video_comments.YouTube")
     video_id = "video_id_mock"
     
@@ -30,6 +35,11 @@ def test_video_comments(mocker):
 
 
 def test_video_comments_with_file_output(mocker, tmp_path):
+    """Test case for fetching video comments and saving them to a CSV file.
+
+    This test mocks the YouTube API to simulate fetching comments for a video,
+    then saves the comments to a temporary CSV file.
+    """
     youtube_mock = mocker.patch("youtool.commands.video_comments.YouTube")
     video_id = "video_id_mock"
     

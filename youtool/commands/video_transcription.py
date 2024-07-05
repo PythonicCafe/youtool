@@ -25,19 +25,20 @@ class VideoTranscription(Command):
 
     @classmethod
     def execute(cls, **kwargs) -> str:
-        """
-        Execute the video-transcription command to download transcriptions of videos based on IDs or URLs and save them to files.
+        """Execute the video-transcription command to download transcriptions of videos based on IDs or URLs and save them to files.
 
         Args:
-            ids: A list of YouTube video IDs.
-            urls: A list of YouTube video URLs.
-            input_file_path: Path to a CSV file containing YouTube video IDs or URLs.
-            output_dir: Directory path to save the transcription files.
-            language_code: Language code for the transcription language.
-            api_key: The API key to authenticate with the YouTube Data API.
+            ids (List[str]): A list of YouTube video IDs.
+            urls (List[str]): A list of YouTube video URLs.
+            input_file_path (str): Path to a CSV file containing YouTube video IDs or URLs.
+            output_dir (str): Directory path to save the transcription files.
+            language_code (str): Language code for the transcription language.
+            api_key (str): The API key to authenticate with the YouTube Data API.
+            url_column_name (str, optional): Column name for URLs in the CSV input file. Defaults to "video_url".
+            id_column_name (str, optional): Column name for IDs in the CSV output file. Defaults to "video_id".
 
         Returns:
-            A message indicating the result of the command. Reports success or failure for each video transcription download.
+            str: A message indicating the result of the command. Reports success or failure for each video transcription download.
         """
         ids = kwargs.get("ids") or []
         urls = kwargs.get("urls") or []

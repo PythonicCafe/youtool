@@ -8,6 +8,10 @@ from youtool.commands import VideoLiveChat
 
 
 def test_video_livechat(mocker):
+    """Test case for fetching live chat messages from a YouTube video.
+
+    Mocks the YouTube API to return expected live chat messages and verifies if the execute method correctly formats and returns the data.
+    """
     youtube_mock = mocker.patch("youtool.commands.video_livechat.YouTube")
     video_id = "video_id_mock"
     
@@ -30,6 +34,10 @@ def test_video_livechat(mocker):
 
 
 def test_video_livechat_with_file_output(mocker, tmp_path):
+    """Test case for fetching live chat messages from a YouTube video and saving them to a CSV file.
+
+    Mocks the YouTube API to return expected live chat messages and verifies if the execute method correctly saves the data to a CSV file.
+    """
     youtube_mock = mocker.patch("youtool.commands.video_livechat.YouTube")
     video_id = "video_id_mock"
     

@@ -4,6 +4,13 @@ from youtool.commands import VideoTranscription
 
 
 def test_video_transcription(mocker, videos_ids, videos_urls, tmp_path):
+    """
+    Test the video transcription command.
+
+    This test verifies the functionality of the VideoTranscription.execute method.
+    It mocks the YouTube API to simulate fetching transcriptions for given video IDs or URLs.
+    Transcriptions are expected to be saved in VTT format in the specified temporary directory.
+    """
     youtube_mock = mocker.patch("youtool.commands.video_transcription.YouTube")
 
     language_code = "pt_br"
@@ -27,6 +34,13 @@ def test_video_transcription(mocker, videos_ids, videos_urls, tmp_path):
 
 
 def test_video_transcription_input_from_file(mocker, videos_ids, tmp_path):
+    """Test the video transcription command with input from a CSV file.
+
+    This test verifies the functionality of the VideoTranscription.execute method when 
+    video IDs are provided via a CSV file. It mocks the YouTube API to simulate fetching 
+    transcriptions for the listed video IDs. Transcriptions are expected to be saved in 
+    VTT format in the specified temporary directory.
+    """
     youtube_mock = mocker.patch("youtool.commands.video_transcription.YouTube")
 
     language_code = "pt_br"

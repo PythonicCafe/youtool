@@ -1,11 +1,14 @@
-import pytest
+from unittest.mock import Mock, call
 
-from unittest.mock import patch, Mock, call
-
-from youtool.commands.channel_info import ChannelInfo, YouTube
+from youtool.commands.channel_info import ChannelInfo
 
 
 def test_filter_fields():
+    """Test to verify the filtering of channel information fields.
+
+    This test checks if the `filter_fields` method of the `ChannelInfo` class correctly
+    filters out unwanted fields from the channel information dictionary based on the provided columns.
+    """
     channel_info = {
         'channel_id': '123456',
         'channel_name': 'Test Channel',
@@ -27,6 +30,11 @@ def test_filter_fields():
 
 
 def test_channel_ids_from_urls_and_usernames(mocker):
+    """Test to verify fetching channel IDs from both URLs and usernames.
+
+    This test checks if the `execute` method of the `ChannelInfo` class correctly fetches channel IDs
+    from a list of URLs and usernames, and then calls the `channels_infos` method with these IDs.
+    """
     urls = ["https://www.youtube.com/@Turicas/featured", "https://www.youtube.com/c/PythonicCaf%C3%A9"]
     usernames = ["Turicas", "PythonicCafe"]
 

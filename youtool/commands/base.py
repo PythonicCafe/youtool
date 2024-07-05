@@ -80,7 +80,11 @@ class Command:
         raise NotImplementedError()
 
     @staticmethod
-    def data_from_csv(file_path: Path, data_column_name: Optional[str] = None) -> List[str]:
+    def data_from_csv(
+        file_path: Path,
+        data_column_name: Optional[str] = None,
+        raise_column_exception: bool = True
+    ) -> List[str]:
         """Extracts a list of URLs from a specified CSV file.
 
         Args:

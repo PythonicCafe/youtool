@@ -44,9 +44,11 @@ class VideoSearch(Command):
             output_file_path (str, optional): Path to the output CSV file where video information will be saved.
             api_key (str): The API key to authenticate with the YouTube Data API.
             full_info (bool, optional): Flag to indicate whether to get full video info. Default is False.
+            url_column_name (str, optional): The name of the column in the input CSV file that contains the URLs. Default is "video_url".
+            id_column_name (str, optional): The name of the column in the input CSV file that contains the IDs. Default is "video_id".
 
         Returns:
-            A message indicating the result of the command. If output_file_path is specified, 
+            str: A message indicating the result of the command. If output_file_path is specified, 
             the message will include the path to the generated CSV file. 
             Otherwise, it will return the result as a string.
 

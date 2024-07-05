@@ -12,6 +12,11 @@ from youtool.commands.base import Command
     "command", COMMANDS
 )
 def test_missing_api_key(monkeypatch: pytest.MonkeyPatch, command: Command):
+    """Test to verify behavior when the YouTube API key is missing.
+    
+    This test ensures that when the YouTube API key is not set, running any command
+    from the youtool CLI results in an appropriate error message and exit code.
+    """
     monkeypatch.delenv('YOUTUBE_API_KEY', raising=False)
     cli_path = Path("youtool") / "cli.py"
     command_string = ["python", cli_path, command.name]

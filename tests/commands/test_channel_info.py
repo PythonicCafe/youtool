@@ -52,10 +52,10 @@ def test_channel_ids_from_urls_and_usernames(mocker):
     youtube_mock.return_value.channel_id_from_username = channel_id_from_username_mock
     youtube_mock.return_value.channels_infos = channels_infos_mock
 
-    ChannelInfo.execute(urls=urls, usernames=usernames)
+    ChannelInfo.execute(urls=channels_urls, usernames=usernames)
 
     channel_id_from_url_mock.assert_has_calls(
-        [call(url) for url in urls]
+        [call(url) for url in channels_urls]
     )
     channel_id_from_username_mock.assert_has_calls(
         [call(username) for username in usernames]

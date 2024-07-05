@@ -105,7 +105,7 @@ class Command:
 
             if fieldnames is None:
                 raise ValueError("Fieldnames is None")
-            
+
             if data_column_name not in fieldnames:
                 raise Exception(f"Column {data_column_name} not found on {file_path}")
             for row in reader:

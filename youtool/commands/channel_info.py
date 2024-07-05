@@ -8,8 +8,7 @@ from .base import Command
 
 
 class ChannelInfo(Command):
-    """
-    Get channel info from a list of IDs (or CSV filename with IDs inside), generate CSV output 
+    """Get channel info from a list of IDs (or CSV filename with IDs inside), generate CSV output 
     (same schema for `channel` dicts)
     """
     name = "channel-info"
@@ -35,8 +34,7 @@ class ChannelInfo(Command):
 
     @staticmethod
     def filter_fields(channel_info: Dict, info_columns: Optional[List] = None):
-        """
-        Filters the fields of a dictionary containing channel information based on 
+        """Filters the fields of a dictionary containing channel information based on 
         specified columns.
 
         Args:
@@ -55,8 +53,8 @@ class ChannelInfo(Command):
 
     @classmethod
     def execute(cls: Self, **kwargs) -> str:
-        """
-        Execute the channel-info command to fetch YouTube channel information from URLs or usernames and save them to a CSV file.
+        """Execute the channel-info command to fetch YouTube channel information from URLs or
+        usernames and save them to a CSV file.
 
         Args:
             urls (list[str], optional): A list of YouTube channel URLs. If not provided, `urls_file_path` must be specified.
@@ -69,7 +67,8 @@ class ChannelInfo(Command):
                                             Default is "channel_url".
             username_column_name (str, optional): The name of the column in the `usernames_file_path` CSV file that contains the usernames.
                                             Default is "channel_username".
-            info_columns (str, optional): Comma-separated list of columns to include in the output CSV. Default is the class attribute `INFO_COLUMNS`.
+            info_columns (str, optional): Comma-separated list of columns to include in the output CSV.
+                                            Default is the class attribute `INFO_COLUMNS`.
 
         Returns:
             str: A message indicating the result of the command. If `output_file_path` is specified, the message will
@@ -78,6 +77,7 @@ class ChannelInfo(Command):
         Raises:
             Exception: If neither `urls`, `usernames`, `urls_file_path` nor `usernames_file_path` is provided.
         """
+
         urls = kwargs.get("urls")
         usernames = kwargs.get("usernames")
         urls_file_path = kwargs.get("urls_file_path")

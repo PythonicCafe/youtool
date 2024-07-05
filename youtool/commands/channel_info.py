@@ -108,7 +108,9 @@ class ChannelInfo(Command):
         ] + [
             youtube.channel_id_from_username(username) for username in (usernames or []) if username
         ]
-        channel_ids = [channel_id for channel_id in channels_ids if channel_id]
+        channel_ids = list(
+            set([channel_id for channel_id in channels_ids if channel_id])
+        )
 
         return cls.data_to_csv(
             data=[

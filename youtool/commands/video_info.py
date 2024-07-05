@@ -32,25 +32,24 @@ class VideoInfo(Command):
         Args:
             ids (list[str], optional): A list of YouTube video IDs. If not provided, input_file_path must be specified.
             urls (list[str], optional): A list of YouTube video URLs. If not provided, input_file_path must be specified.
-            urls_file_path (str, optional): Path to a CSV file containing YouTube channel URLs.
-            ids_file_path (str, optional): Path to a CSV file containing YouTube channel IDs.
             input_file_path (str, optional): Path to a CSV file containing YouTube video URLs or IDs.
             output_file_path (str, optional): Path to the output CSV file where video information will be saved.
             api_key (str): The API key to authenticate with the YouTube Data API.
             url_column_name (str, optional): The name of the column in the input_file_path CSV file that contains the URLs.
-                                             Default is "video_url".
+                                            Default is "video_url".
             id_column_name (str, optional): The name of the column in the input_file_path CSV file that contains the IDs.
                                             Default is "video_id".
-            info_columns (str, optional): Comma-separated list of columns to include in the output CSV. Default is the class attribute INFO_COLUMNS.
+            info_columns (str, optional): Comma-separated list of columns to include in the output CSV. 
+                                            Default is the class attribute INFO_COLUMNS.
 
         Returns:
-            A message indicating the result of the command. If output_file_path is specified, 
-            the message will include the path to the generated CSV file. 
-            Otherwise, it will return the result as a string.
+            str: A message indicating the result of the command. If output_file_path is specified, the message will
+                include the path to the generated CSV file. Otherwise, it will return the result as a string.
 
         Raises:
             Exception: If neither ids, urls, nor input_file_path is provided.
         """
+
         ids = kwargs.get("ids", [])
         urls = kwargs.get("urls", [])
         input_file_path = kwargs.get("input_file_path")

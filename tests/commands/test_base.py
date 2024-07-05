@@ -2,8 +2,6 @@ import csv
 import argparse
 import pytest
 
-from io import StringIO
-from datetime import datetime
 from pathlib import Path
 from unittest.mock import MagicMock, patch, mock_open
 from youtool.commands import Command
@@ -83,7 +81,7 @@ def test_data_from_csv_column_not_found(mock_csv_file):
             file_path = Path("tests/resources/csv_column_not_found.csv")
             with pytest.raises(Exception) as exc_info:
                 Command.data_from_csv(file_path, "NonExistentColumn")
-            assert f"Column NonExistentColumn not found on {file_path}" in str(exc_info.value)
+            assert "Column NonExistentColumn not found on tests/resources/csv_column_not_found.csv" in str(exc_info.value)
 
 
 @pytest.fixture
@@ -126,3 +124,23 @@ def test_data_to_csv_output(tmp_path):
     assert Path(output_file_path).is_file()
     assert expected_output == Path(output_file_path).read_text()
     assert str(output_file_path) == result
+
+def test_filter_fields():
+    channel_info = {
+        'channel_id': '123456',
+        'channel_name': 'Test Channel',
+        'subscribers': 1000,
+        'videos': 50,
+        'category': 'Tech'
+    }
+    
+    info_columns = ['channel_id', 'channel_name', 'subscribers']
+    filtered_info = Command.filter_fields(channel_info, info_columns)
+    
+    expected_result = {
+        'channel_id': '123456',
+        'channel_name': 'Test Channel',
+        'subscribers': 1000
+    }
+    
+    assert filtered_info == expected_result, f"Expected {expected_result}, but got {filtered_info}"

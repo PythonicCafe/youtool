@@ -1,3 +1,5 @@
+import pytest
+
 from unittest.mock import Mock, call
 
 from youtool.commands.channel_info import ChannelInfo

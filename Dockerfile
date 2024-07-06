@@ -11,12 +11,12 @@ RUN apt update \
   && apt clean \
   && rm -rf /var/lib/apt/lists/*
 
-COPY requirements/ /app/requirements
-RUN pip install --no-cache-dir -U pip \
-  && pip install --no-cache-dir -r /app/requirements/base.txt \
-  && pip install --no-cache-dir -r /app/requirements/cli.txt \
-  && pip install --no-cache-dir -r /app/requirements/livechat.txt \
-  && pip install --no-cache-dir -r /app/requirements/transcription.txt \
-  && if [ "$DEV_BUILD" = "true" ]; then pip install --no-cache-dir -r /app/requirements/dev.txt; fi
-
 COPY . /app/
+
+RUN pip install --no-cache-dir -U --upgrade pip \
+  && if [ "$DEV_BUILD" = "true" ]; \
+  then \
+    pip install poetry==1.4.2; \
+    poetry export -f requirements.txt --output requirements.txt --without-hashes --with dev; \
+    pip install --no-cache-dir -r requirements.txt; \
+  else pip install /app; fi

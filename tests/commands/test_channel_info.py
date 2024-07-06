@@ -31,7 +31,7 @@ def test_filter_fields():
     assert filtered_info == expected_result, f"Expected {expected_result}, but got {filtered_info}"
 
 
-def test_channel_ids_from_urls_and_usernames(mocker):
+def test_channel_ids_from_urls_and_usernames(mocker, channels_urls):
     """Test to verify fetching channel IDs from both URLs and usernames.
 
     This test checks if the `execute` method of the `ChannelInfo` class correctly fetches channel IDs

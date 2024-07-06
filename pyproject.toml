@@ -25,6 +25,7 @@ pytest-dependency = "^0.6.0"
 twine = "^5.1.1"
 wheel = "^0.43.0"
 
+pytest-mock = "^3.14.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

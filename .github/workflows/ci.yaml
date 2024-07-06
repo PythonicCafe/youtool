@@ -1,6 +1,6 @@
 name: CI
 
-on: [ push, pull_request ]
+on: [ push, pull_request, commit ]
 
 jobs:
   ci:
@@ -19,4 +19,4 @@ jobs:
         python -m pip install --upgrade pip
         poetry install -vv
     - name: Test
-      run: pytest
+      run: poetry run pytest

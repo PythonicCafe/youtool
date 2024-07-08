@@ -13,7 +13,6 @@
 .gitignore
 .pytest_cache
 Dockerfile
-README.md
 build
 data
 dist

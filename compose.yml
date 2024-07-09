@@ -9,5 +9,3 @@ services:
     user: "${UID}:${GID}"
     volumes:
       - ${PWD}:/app
-    ports:
-      - 5000:5000

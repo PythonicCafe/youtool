@@ -517,8 +517,10 @@ class YouTube:
             text = message["message"]
             if expand_emojis:
                 for emoji in message.get("emotes", []):
-                    for shortcut in emoji["shortcuts"]:
-                        text = text.replace(shortcut, emoji["id"])
+                    shortcuts = emoji.get("shortcuts")
+                    if shortcuts:
+                        for shortcut in shortcuts:
+                            text = text.replace(shortcut, emoji["id"])
             money = message.get("money", {}) or {}
             yield {
                 "id": message["message_id"],

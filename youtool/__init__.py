@@ -1,3 +1,4 @@
+__version__ = "0.1.2"
 import datetime
 import re
 from collections import defaultdict

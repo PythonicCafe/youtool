@@ -6,8 +6,8 @@ import webvtt
 
 from youtool import utils
 
-
 TEST_DATA_DIR = Path(__file__).parent / "data"
+
 
 def extract_vtt_words(content):
     vtt = webvtt.read_buffer(io.StringIO(content))
@@ -36,8 +36,8 @@ def test_simplify_vtt():
     assert utils.simplify_vtt(content[0]) == utils.simplify_vtt(content[1])
     # Check if simplified version of whisper with no word timings has more or less the same number of words of
     # simplified YouTube version
-    whisper_str = extract_vtt_words(utils.simplify_vtt(content[0]))
-    youtube_str = extract_vtt_words(utils.simplify_vtt(content[2]))
+    whisper_words = extract_vtt_words(utils.simplify_vtt(content[0]))
+    youtube_words = extract_vtt_words(utils.simplify_vtt(content[2]))
     # Number of words (not unique) will be more or less the same if simplification worked - if not, difference will be
     # huge (`youtube_words` would be higher).
     assert 0.9 <= len(whisper_words) / len(youtube_words) <= 1.1
@@ -58,8 +58,8 @@ def test_simplify_vtt():
     assert utils.simplify_vtt(content[0]) == utils.simplify_vtt(content[1])
     # Check if simplified version of whisper with no word timings has more or less the same number of words of
     # simplified YouTube version
-    whisper_str = extract_vtt_words(utils.simplify_vtt(content[0]))
-    youtube_str = extract_vtt_words(utils.simplify_vtt(content[2]))
+    whisper_words = extract_vtt_words(utils.simplify_vtt(content[0]))
+    youtube_words = extract_vtt_words(utils.simplify_vtt(content[2]))
     # Number of words (not unique) will be more or less the same if simplification worked - if not, difference will be
     # huge (`youtube_words` would be higher).
     assert 0.9 <= len(whisper_words) / len(youtube_words) <= 1.1

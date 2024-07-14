@@ -609,6 +609,40 @@ class YouTube:
             filename_search_pattern="{video_id}.{language_code}.vtt",
         )
 
+    def download_audios(self, videos_ids, path, skip_downloaded=True, batch_size=10):
+        """Download audios in best available format using yt-dlp, usually saves as `.m4a` and returns final status"""
+        yield from self.download_media(
+            videos_ids=videos_ids,
+            path=path,
+            media_format="bestaudio",
+            skip_downloaded=skip_downloaded,
+            batch_size=batch_size,
+        )
+
+    def download_videos(self, videos_ids, path, skip_downloaded=True, batch_size=10):
+        """Download videos in best available format using yt-dlp, usually saves as `.mp4` and returns final status"""
+        yield from self.download_media(
+            videos_ids=videos_ids,
+            path=path,
+            media_format="bestvideo",
+            skip_downloaded=skip_downloaded,
+            batch_size=batch_size,
+        )
+
+    def download_media(self, videos_ids, media_format, path, skip_downloaded=True, batch_size=10):
+        """Download video media (video only, audio only or both) using yt-dlp and returns final status per video
+
+        `media_format` can be "bestaudio", "bestvideo" or any format ID returned by `yt-dlp -f <video_url>` command
+        """
+        yield from self._process_ytdlp_batches(
+            videos_ids=videos_ids,
+            path=path,
+            media_format=media_format,
+            skip_downloaded=skip_downloaded,
+            batch_size=batch_size,
+            filename_search_pattern="{video_id}.*",
+        )
+
     def _process_ytdlp_batches(self, videos_ids, path, language_code=None, media_format=None, skip_downloaded=True,
                                batch_size=10, filename_pattern="%(id)s.%(ext)s", filename_search_pattern=None):
         if filename_search_pattern is None:

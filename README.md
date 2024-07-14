@@ -41,6 +41,8 @@ pip install youtool[transcription]
 
 Just follow the tutorial/examples below and check the `help()` for `YouTube` methods.
 
+> Note: the examples below will use 135 units of your API key quota.
+
 ```python
 from pprint import pprint
 from pathlib import Path
@@ -55,7 +57,7 @@ print(f"Pythonic Café's channel ID (got from URL): {channel_id_1}")
 channel_id_2 = yt.channel_id_from_username("turicas")
 print(f"Turicas' channel ID (got from username): {channel_id_2}")
 
-print('Playlists found on Turicas' channel (the "uploads" playlist is not here):')
+print("Playlists found on Turicas' channel (the \"uploads\" playlist is not here):")
 # WARNING: this method won't return the main channel playlist ("uploads").
 # If you need it, get channel info using `channels_infos` and the `playlist_id` key (or use the hack in the next
 # section), so you can pass it to `playlist_videos`.
@@ -139,6 +141,13 @@ for video in yt.most_popular(region_code="BR"):  # Will paginate automatically
     # `video` is a `dict`, but this endpoint doesn't provide full video information (use `videos_infos` to get them)
     print(f"{video['id']} {video['title']}")
 print("-" * 80)
+
+print("Total quota used during this session:")
+total_used = 0
+for method, units_used in yt.used_quota.items():
+    print(f"{method:20}: {units_used:05d} unit{'' if units_used == 1 else 's'}")
+    total_used += units_used
+print(f"TOTAL               : {total_used:05d} unit{'' if total_used == 1 else 's'}")
 ```
 
 ## Tests

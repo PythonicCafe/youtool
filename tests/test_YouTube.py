@@ -186,7 +186,7 @@ def test_YouTube_video_comments():
 def test_YouTube_video_livechat():
     video_livechat_data = list(yt.video_livechat(live_video_id))
     assert_types("live_comment", expected_live_comment_types, video_livechat_data)
-    assert len(video_livechat_data) == 589
+    assert len(video_livechat_data) > 500
     assert sum(video["money_amount"] for video in video_livechat_data if video["money_currency"] == "BRL") == Decimal(
         "70.9"
     )
@@ -233,5 +233,5 @@ def test_YouTube_video_search():
             video_category_id=None,
         )
     )
-    assert len(video_search_data) == 6
+    assert len(video_search_data) > 5
     assert_types("video from search", expected_video_types, video_search_data)

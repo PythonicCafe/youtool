@@ -6,7 +6,7 @@ WORKDIR /app
 
 RUN apt update \
   && apt upgrade -y \
-  && apt install -y build-essential make python3-dev \
+  && apt install -y build-essential ffmpeg make python3-dev \
   && apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && apt clean \
   && rm -rf /var/lib/apt/lists/*

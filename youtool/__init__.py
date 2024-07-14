@@ -1,5 +1,7 @@
+__version__ = "0.1.2"
 import datetime
 import re
+from collections import defaultdict
 from collections.abc import Iterator
 from decimal import Decimal
 from pathlib import Path
@@ -332,8 +334,30 @@ class YouTube:
         "Religion": "/m/06bvp",  # Society
         "Knowledge": "/m/01k8wb",  # Other
     }
+    # The dict below has quota units for `list` requests in each endpoint
+    cost_units = {
+        "activities": 1,  # TODO: method currently not implemented by this library
+        "captions": 50,  # TODO: method currently not implemented by this library
+        "channelSections": 1,  # TODO: method currently not implemented by this library
+        "comments": 1,  # TODO: method currently not implemented by this library
+        "i18nLanguages": 1,  # TODO: method currently not implemented by this library
+        "i18nRegions": 1,  # TODO: method currently not implemented by this library
+        "members": 2,  # TODO: method currently not implemented by this library
+        "membershipsLevels": 1,  # TODO: method currently not implemented by this library
+        "subscriptions": 1,  # TODO: method currently not implemented by this library
+        "videoAbuseReportReasons": 1,  # TODO: method currently not implemented by this library
+        "channels": 1,
+        "commentThreads": 1,
+        "playlistItems": 1,
+        "playlists": 1,
+        "search": 100,
+        "videoCategories": 1,
+        "videos": 1,
+    }
 
     def __init__(self, api_keys: List[str], disable_ipv6=False):
+        if isinstance(api_keys, str):  # Just one API key was passed
+            api_keys = [api_keys]
         self.__api_keys = list(api_keys)  # Consume and make a copy (it'll be `pop`ed)
         self.__current_key = self.__api_keys.pop(0)
         self.__params = {"key": self.__current_key, "maxResults": 50}  # 50 is the max for YouTube Data API v3
@@ -342,6 +366,7 @@ class YouTube:
         if disable_ipv6:
             requests.packages.urllib3.util.connection.HAS_IPV6 = False
         self.session = requests.Session()
+        self.used_quota = defaultdict(int)
 
     def request(self, path, params=None):
         final_params = self.__params.copy()
@@ -349,6 +374,7 @@ class YouTube:
         url = urljoin(self.base_url, path)
 
         response = self.session.get(url, params=final_params)
+        self.used_quota[path] += self.cost_units[path]
         data = response.json()
         # TODO: implement quota
         while "error" in data and 400 <= data["error"]["code"] < 500:
@@ -492,8 +518,10 @@ class YouTube:
             text = message["message"]
             if expand_emojis:
                 for emoji in message.get("emotes", []):
-                    for shortcut in emoji["shortcuts"]:
-                        text = text.replace(shortcut, emoji["id"])
+                    shortcuts = emoji.get("shortcuts")
+                    if shortcuts:
+                        for shortcut in shortcuts:
+                            text = text.replace(shortcut, emoji["id"])
             money = message.get("money", {}) or {}
             yield {
                 "id": message["message_id"],
@@ -555,27 +583,27 @@ class YouTube:
 
     def video_search(
         self,
-        term: str=None,
-        region_code: str=None,
-        language_code: str=None,
-        since: datetime.datetime=None,
-        until: datetime.datetime=None,
-        order: str="date",
-        channel_id: str=None,
+        term: str = None,
+        region_code: str = None,
+        language_code: str = None,
+        since: datetime.datetime = None,
+        until: datetime.datetime = None,
+        order: str = "date",
+        channel_id: str = None,
         channel_type=None,
         event_type=None,
         topic=None,
         video_type=None,
-        location: tuple=None,
-        location_radius: str=None,
-        safe_search: str=None,
-        video_caption: str=None,
-        video_definition: str=None,
-        video_dimension: str=None,
-        video_embeddable: str=None,
-        video_paid_product_placement: str=None,
-        video_syndicated: str=None,
-        video_license: str=None,
+        location: tuple = None,
+        location_radius: str = None,
+        safe_search: str = None,
+        video_caption: str = None,
+        video_definition: str = None,
+        video_dimension: str = None,
+        video_embeddable: str = None,
+        video_paid_product_placement: str = None,
+        video_syndicated: str = None,
+        video_license: str = None,
         video_category_id=None,
     ):
         """Get list of videos from a search (not all video parameters will be filled, check `parse_video_data`)

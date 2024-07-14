@@ -16,6 +16,7 @@ REGEXP_LOCATION_RADIUS = re.compile(r"^[0-9.]+(?:m|km|ft|mi)$")
 REGEXP_NAIVE_DATETIME = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}[T ][0-9]{2}:[0-9]{2}:[0-9]{2}$")
 REGEXP_DATETIME_MILLIS = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}[T ][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+")
 
+
 def _file_search(path, filename_search_pattern, video_id, language_code, media_format):
     filenames = list(
         path.glob(
@@ -643,14 +644,22 @@ class YouTube:
             filename_search_pattern="{video_id}.*",
         )
 
-    def _process_ytdlp_batches(self, videos_ids, path, language_code=None, media_format=None, skip_downloaded=True,
-                               batch_size=10, filename_pattern="%(id)s.%(ext)s", filename_search_pattern=None):
+    def _process_ytdlp_batches(
+        self,
+        videos_ids,
+        path,
+        language_code=None,
+        media_format=None,
+        skip_downloaded=True,
+        batch_size=10,
+        filename_pattern="%(id)s.%(ext)s",
+        filename_search_pattern=None,
+    ):
         if filename_search_pattern is None:
             filename_search_pattern = "{video_id}.*"
         path = Path(path)
         path_pattern = path.absolute() / filename_pattern
         ydl = self._get_ydl(path_pattern=path_pattern, media_format=media_format, language_code=language_code)
-        total = len(videos_ids) if hasattr(videos_ids, "__len__") else None
         statuses, filenames = {}, {}
         batch, executed = [], []
         for video_id in videos_ids:
@@ -659,15 +668,13 @@ class YouTube:
             if skip_downloaded and filename:
                 statuses[video_id] = "skipped"
                 filenames[video_id] = filename
-                exception = None
             else:
                 batch.append(f"https://www.youtube.com/watch?v={video_id}")
             if len(batch) == batch_size:
-                exception = None
                 try:
                     ydl.download(batch)
-                except Exception as exp:
-                    exception = exp
+                except Exception:
+                    pass
                 for video_id in executed:
                     filename = _file_search(path, filename_search_pattern, video_id, language_code, media_format)
                     if filename:
@@ -681,11 +688,10 @@ class YouTube:
                 batch = []
                 executed = []
         if batch:
-            exception = None
             try:
                 ydl.download(batch)
-            except Exception as exp:
-                exception = exp
+            except Exception:
+                pass
             for video_id in executed:
                 filename = _file_search(path, filename_search_pattern, video_id, language_code, media_format)
                 if filename:

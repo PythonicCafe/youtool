@@ -193,7 +193,7 @@ def test_YouTube_video_livechat():
 
 
 @pytest.mark.usefixtures("tmpdir")
-def test_YouTube_videos_transcriptions():
+def test_YouTube_download_transcriptions():
     lang = "pt"
     filenames = [TMP_FILE_PATH / f"{video_id}.{lang}.vtt" for video_id in vtt_videos_ids]
     # Make sure files do not exist before downloading
@@ -201,9 +201,10 @@ def test_YouTube_videos_transcriptions():
         if filename.exists():
             filename.unlink()
 
-    yt.videos_transcriptions(vtt_videos_ids, lang, TMP_FILE_PATH)
-    for filename in filenames:
-        assert filename.exists()
+    for status in yt.download_transcriptions(vtt_videos_ids, lang, TMP_FILE_PATH):
+        assert status[
+            "filename"
+        ].exists(), f"Cannot download transcriptions for {status['video_id']} (status: {status['status']})"
 
 
 def test_YouTube_video_search():

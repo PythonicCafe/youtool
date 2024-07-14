@@ -16,6 +16,20 @@ REGEXP_LOCATION_RADIUS = re.compile(r"^[0-9.]+(?:m|km|ft|mi)$")
 REGEXP_NAIVE_DATETIME = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}[T ][0-9]{2}:[0-9]{2}:[0-9]{2}$")
 REGEXP_DATETIME_MILLIS = re.compile(r"^[0-9]{4}-[0-9]{2}-[0-9]{2}[T ][0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+")
 
+def _file_search(path, filename_search_pattern, video_id, language_code, media_format):
+    filenames = list(
+        path.glob(
+            filename_search_pattern.format(
+                video_id=video_id,
+                language_code=language_code,
+                media_format=media_format,
+            )
+        )
+    )
+    if not filenames:
+        return None
+    return filenames[0]
+
 
 def cleanup(data):
     """Remove NUL (\x00) from str, dict e lists, recursively
@@ -538,20 +552,35 @@ class YouTube:
                 "money_amount": parse_decimal(money.get("amount")),
             }
 
-    def _get_ydl(self, path_pattern, language_code):
+    def _get_ydl(self, path_pattern, language_code=None, media_format=None):
+        """Create an instance of `YouTubeDL` and caches it
+
+        `media_format` can be "bestaudio", "bestvideo" or any format ID returned by `yt-dlp -f <video_url>` command
+        `language_code` can be any from the list returned by `yt-dlp --list-subs <video_url>` command
+        `language_code` implies skipping download of the media, so can't be used with `media_format`
+        """
         import yt_dlp
 
-        key = (language_code, str(path_pattern))
+        if language_code is not None and media_format is not None:
+            raise ValueError("`language_code` implies skipping download of media, so `media_format` cannot be used")
+        key = (str(path_pattern), language_code, media_format)
         if key not in self._ydls:
             options = {
                 "cachedir": False,
                 "noprogress": True,
                 "outtmpl": str(path_pattern),
                 "quiet": True,
-                "skip_download": True,
-                "subtitleslangs": [language_code],
-                "writeautomaticsub": True,
             }
+            if language_code is not None:
+                options.update(
+                    {
+                        "skip_download": True,
+                        "subtitleslangs": [language_code],
+                        "writeautomaticsub": True,
+                    }
+                )
+            elif media_format is not None:
+                options.update({"format": media_format})
             if self.disable_ipv6:
                 options["source_address"] = "0.0.0.0"
             self._ydls[key] = yt_dlp.YoutubeDL(options)

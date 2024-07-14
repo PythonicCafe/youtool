@@ -587,28 +587,81 @@ class YouTube:
         return self._ydls[key]
 
     def videos_transcriptions(self, videos_ids, language_code, path, skip_downloaded=True, batch_size=10):
-        """Download video transcriptions (automatically generated) using yt-dlp"""
-        # TODO: add a callback for stats?
-        language_code = language_code.lower()
-        path_pattern = Path(path).absolute() / "%(id)s"
-        ydl = self._get_ydl(path_pattern, language_code)
-        batch = []
+        """DEPRECATED: use `download_transcriptions` instead (you must iterate over it so it executes)"""
+        return list(
+            self.download_transcriptions(
+                videos_ids=videos_ids,
+                language_code=language_code,
+                path=path,
+                skip_downloaded=skip_downloaded,
+                batch_size=batch_size,
+            )
+        )
+
+    def download_transcriptions(self, videos_ids, language_code, path, skip_downloaded=True, batch_size=10):
+        """Download videos in best available format using yt-dlp, usually saves as `.mp4` and returns final status"""
+        yield from self._process_ytdlp_batches(
+            videos_ids=videos_ids,
+            path=path,
+            language_code=language_code,
+            skip_downloaded=skip_downloaded,
+            batch_size=batch_size,
+            filename_search_pattern="{video_id}.{language_code}.vtt",
+        )
+
+    def _process_ytdlp_batches(self, videos_ids, path, language_code=None, media_format=None, skip_downloaded=True,
+                               batch_size=10, filename_pattern="%(id)s.%(ext)s", filename_search_pattern=None):
+        if filename_search_pattern is None:
+            filename_search_pattern = "{video_id}.*"
+        path = Path(path)
+        path_pattern = path.absolute() / filename_pattern
+        ydl = self._get_ydl(path_pattern=path_pattern, media_format=media_format, language_code=language_code)
+        total = len(videos_ids) if hasattr(videos_ids, "__len__") else None
+        statuses, filenames = {}, {}
+        batch, executed = [], []
         for video_id in videos_ids:
-            filename = str(path_pattern).replace("%(id)s", f"{video_id}.{language_code}.vtt")
-            if skip_downloaded and Path(filename).exists():
-                continue
-            batch.append(f"https://www.youtube.com/watch?v={video_id}")
+            executed.append(video_id)
+            filename = _file_search(path, filename_search_pattern, video_id, language_code, media_format)
+            if skip_downloaded and filename:
+                statuses[video_id] = "skipped"
+                filenames[video_id] = filename
+                exception = None
+            else:
+                batch.append(f"https://www.youtube.com/watch?v={video_id}")
             if len(batch) == batch_size:
+                exception = None
                 try:
                     ydl.download(batch)
-                except Exception:
-                    pass
+                except Exception as exp:
+                    exception = exp
+                for video_id in executed:
+                    filename = _file_search(path, filename_search_pattern, video_id, language_code, media_format)
+                    if filename:
+                        filenames[video_id] = filename
+                    if statuses.get(video_id) is None:  # Could be 'skipped'
+                        statuses[video_id] = "done"
+                    else:
+                        statuses[video_id] = "error"
+                for key in executed:
+                    yield {"video_id": key, "status": statuses[key], "filename": filenames.get(key)}
                 batch = []
+                executed = []
         if batch:
+            exception = None
             try:
                 ydl.download(batch)
-            except Exception:
-                pass
+            except Exception as exp:
+                exception = exp
+            for video_id in executed:
+                filename = _file_search(path, filename_search_pattern, video_id, language_code, media_format)
+                if filename:
+                    filenames[video_id] = filename
+                    if statuses.get(video_id) is None:  # Could be 'skipped'
+                        statuses[video_id] = "done"
+                else:
+                    statuses[video_id] = "error"
+        for key in executed:
+            yield {"video_id": key, "status": statuses[key], "filename": filenames.get(key)}
 
     def video_search(
         self,

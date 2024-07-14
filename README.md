@@ -120,15 +120,18 @@ download_path = Path("transcriptions")
 if not download_path.exists():
     download_path.mkdir(parents=True)
 print(f"Downloading Portuguese (pt) transcriptions for videos {video_id} and {live_video_id} - saving at {download_path.absolute()}")
-yt.videos_transcriptions([video_id, live_video_id], language_code="pt", path=download_path)
-for vid in [video_id, live_video_id]:
-    result = list(download_path.glob(f"{vid}*vtt"))
-    if not result:
-        print(f"  Transcription for video {vid} could not be downloaded.")
-    else:
-        filename = result[0]
-        print(f"  Downloaded: {filename} ({filename.stat().st_size / 1024:.1f} KiB)")
+for downloaded in yt.download_transcriptions([video_id, live_video_id], language_code="pt", path=download_path):
+    vid, status, filename = downloaded["video_id"], downloaded["status"], downloaded["filename"]
+    if status == "error":
+        print(f"  {vid}: error downloading!")
+    elif status == "skipped":
+        print(f"  {vid}: skipped, file already exists ({filename}: {filename.stat().st_size / 1024:.1f} KiB)")
+    elif status == "done":
+        print(f"  {vid}: done ({filename}: {filename.stat().st_size / 1024:.1f} KiB)")
 print("-" * 80)
+
+# You can also download audio and video, just replace `download_transcriptions` with `download_audios` or
+# `download_videos`. As simple as it is. :)
 
 print("Categories in Brazilian YouTube:")
 for category in yt.categories(region_code="BR"):

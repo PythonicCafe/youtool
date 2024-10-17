@@ -1,14 +1,8 @@
 [tool.poetry]
 name = "youtool"
-<<<<<<< HEAD
 version = "0.1.1"
 description = "Easy-to-use library to access YouTube Data API v3 in bulk operations"
 authors = ["Álvaro Justen <alvarojusten@gmail.com>"]
-=======
-version = "0.1.0"
-description = ""
-authors = ["Your Name <you@example.com>"]
->>>>>>> 4c93b16 (add github actions)
 readme = "README.md"
 
 [tool.poetry.dependencies]

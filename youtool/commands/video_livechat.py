@@ -11,7 +11,7 @@ class VideoLiveChat(Command):
     arguments = [
         {"name": "--id", "type": str, "help": "Video ID", "required": True},
         {"name": "--output-file-path", "type": str, "help": "Output CSV file path"},
-        {"name": "--expand-emojis", "type": bool, "help": "Expand emojis in chat messages", "default": True}
+        {"name": "--expand-emojis", "help": "Expand emojis in chat messages", "default": True, "action": "store_true"}
     ]
 
     CHAT_COLUMNS: List[str] = [
@@ -22,7 +22,10 @@ class VideoLiveChat(Command):
 
     @staticmethod
     def parse_timestamp(timestamp: str) -> str:
-        return datetime.utcfromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S')
+        try:
+            return datetime.utcfromtimestamp(int(timestamp)).strftime('%Y-%m-%d %H:%M:%S')
+        except ValueError:
+            return datetime.utcfromtimestamp(int(timestamp) / 1000000).strftime('%Y-%m-%d %H:%M:%S')
 
     @staticmethod
     def parse_decimal(value: Optional[str]) -> Optional[float]:
@@ -58,7 +61,7 @@ class VideoLiveChat(Command):
                 text = message["message"]
                 if expand_emojis:
                     for emoji in message.get("emotes", []):
-                        for shortcut in emoji["shortcuts"]:
+                        for shortcut in (emoji.get("shortcuts") or []):
                             text = text.replace(shortcut, emoji["id"])
                 money = message.get("money", {}) or {}
                 chat_messages.append({

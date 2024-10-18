@@ -1,7 +1,7 @@
 import argparse
 import os
 
-from youtool.commands import COMMANDS
+from commands import COMMANDS
 
 
 def main():

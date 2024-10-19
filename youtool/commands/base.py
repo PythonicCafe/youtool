@@ -1,6 +1,5 @@
 import argparse
 import csv
-from datetime import datetime
 from io import StringIO
 from pathlib import Path
 from typing import Any, Dict, List, Optional

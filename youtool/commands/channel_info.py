@@ -1,7 +1,6 @@
 from typing import Dict, List, Optional, Self
 
-from youtool import YouTube
-
+from .. import YouTube
 from .base import Command
 
 

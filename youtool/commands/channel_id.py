@@ -1,7 +1,6 @@
 from pathlib import Path
 
-from youtool import YouTube
-
+from .. import YouTube
 from .base import Command
 
 

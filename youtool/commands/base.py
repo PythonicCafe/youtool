@@ -105,19 +105,16 @@ class Command:
         with file_path.open("r", newline="") as csv_file:
             reader = csv.DictReader(csv_file)
             fieldnames = reader.fieldnames
-
             if fieldnames is None:
                 raise ValueError("Fieldnames is None")
-
             if data_column_name not in fieldnames:
                 if raise_column_exception:
                     raise Exception(f"Column {data_column_name} not found on {file_path}")
                 return data
-
             for row in reader:
-                value = row.get(data_column_name)
-                if value is not None:
-                    data.append(str(value))
+                value = row[data_column_name].strip()
+                if value:
+                    data.append(value)
         return data
 
     @classmethod
@@ -133,10 +130,11 @@ class Command:
         Returns:
         str: The path of the created CSV file or, if no path is provided, the contents of the CSV as a string.
         """
+        output_path = None
         if output_file_path:
             output_path = Path(output_file_path)
 
-        with Path(output_file_path).open("w", newline="") if output_file_path else StringIO() as csv_file:
+        with output_path.open("w", newline="") if output_path else StringIO() as csv_file:
             writer = csv.DictWriter(csv_file, fieldnames=list(data[0].keys()) if data else [])
             writer.writeheader()
             writer.writerows(data)

@@ -118,7 +118,7 @@ class ChannelInfo(Command):
         return cls.data_to_csv(
             data=[
                 ChannelInfo.filter_fields(channel_info, info_columns)
-                for channel_info in (youtube.channels_infos(channel_ids) or [])
+                for channel_info in youtube.channels_infos(channel_ids)
             ],
             output_file_path=output_file_path,
         )

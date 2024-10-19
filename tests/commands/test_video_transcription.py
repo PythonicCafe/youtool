@@ -13,10 +13,10 @@ def test_video_transcription(mocker, videos_ids, videos_urls, tmp_path):
     """
     youtube_mock = mocker.patch("youtool.commands.video_transcription.YouTube")
 
-    language_code = "pt_br"
+    language_code = "pt"
 
-    videos_transcriptions_mock = Mock()
-    youtube_mock.return_value.videos_transcriptions = videos_transcriptions_mock
+    download_transcriptions_mock = Mock(return_value=[{"status": "done"}])
+    youtube_mock.return_value.download_transcriptions = download_transcriptions_mock
 
     for video_id in videos_ids:
         open(tmp_path / f"{video_id}.{language_code}.vtt", "a").close()
@@ -24,11 +24,8 @@ def test_video_transcription(mocker, videos_ids, videos_urls, tmp_path):
     result = VideoTranscription.execute(
         ids=videos_ids, urls=videos_urls, language_code=language_code, output_dir=tmp_path
     )
-
-    videos_transcriptions_mock.assert_called_once_with(list(set(videos_ids)), language_code, tmp_path)
-
-    for video_id in videos_ids:
-        assert str(tmp_path / f"{video_id}.{language_code}.vtt") in result
+    download_transcriptions_mock.assert_called_once_with(list(set(videos_ids)), language_code, tmp_path)
+    assert result is None
 
 
 def test_video_transcription_input_from_file(mocker, videos_ids, tmp_path):
@@ -41,10 +38,10 @@ def test_video_transcription_input_from_file(mocker, videos_ids, tmp_path):
     """
     youtube_mock = mocker.patch("youtool.commands.video_transcription.YouTube")
 
-    language_code = "pt_br"
+    language_code = "pt"
 
-    videos_transcriptions_mock = Mock()
-    youtube_mock.return_value.videos_transcriptions = videos_transcriptions_mock
+    download_transcriptions_mock = Mock(return_value=[{"status": "done"}])
+    youtube_mock.return_value.download_transcriptions = download_transcriptions_mock
 
     input_file_path = tmp_path / "input_file.csv"
 
@@ -57,8 +54,5 @@ def test_video_transcription_input_from_file(mocker, videos_ids, tmp_path):
     result = VideoTranscription.execute(
         ids=None, urls=None, language_code=language_code, output_dir=tmp_path, input_file_path=input_file_path
     )
-
-    videos_transcriptions_mock.assert_called_once_with(list(set(videos_ids)), language_code, tmp_path)
-
-    for video_id in videos_ids:
-        assert str(tmp_path / f"{video_id}.{language_code}.vtt") in result
+    download_transcriptions_mock.assert_called_once_with(list(set(videos_ids)), language_code, tmp_path)
+    assert result is None

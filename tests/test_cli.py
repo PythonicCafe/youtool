@@ -27,7 +27,7 @@ def test_missing_api_key_video_livechat(monkeypatch: pytest.MonkeyPatch):
 def test_missing_api_key_video_transcription(monkeypatch: pytest.MonkeyPatch):
     """Test to verify behavior when the YouTube API key is missing for some commands"""
     monkeypatch.delenv("YOUTUBE_API_KEY", raising=False)
-    command = ["python", "-m", "youtool.cli", "video-transcription", "--ids", "NtZY3AmsBSk"]
+    command = ["python", "-m", "youtool.cli", "video-transcription", "pt", "--ids", "NtZY3AmsBSk"]
     result = run(command, capture_output=True, text=True, check=False)
     assert result.returncode == 0
 

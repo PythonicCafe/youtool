@@ -32,7 +32,9 @@ def main():
     args = main_parser.parse_args()
 
     try:
-        print(args.func(**args.__dict__))
+        result = args.func(**args.__dict__)
+        if result:
+            print(result)
     except Exception as error:
         import traceback
 

@@ -18,10 +18,10 @@ class VideoTranscription(Command):
         parser.add_argument("--urls", type=str, help="Video URLs", nargs="*")
         parser.add_argument("--input-file-path", type=str, help="CSV file path containing video IDs or URLs")
         parser.add_argument("--output-dir", type=str, help="Output directory to save transcriptions")
-        parser.add_argument("--language-code", type=str, help="Language code for transcription")
         parser.add_argument("--api-key", type=str, help="API key for YouTube Data API")
         parser.add_argument("--url-column-name", type=str, help="URL column name on csv input files")
         parser.add_argument("--id-column-name", type=str, help="Channel ID column name on csv output files")
+        parser.add_argument("language_code", type=str, help="Language code for transcription")
 
     @classmethod
     def execute(cls, **kwargs) -> str:
@@ -65,10 +65,5 @@ class VideoTranscription(Command):
 
         # Remove duplicated
         ids = list(set(ids))
-        youtube.videos_transcriptions(ids, language_code, output_dir)
-        saved_transcriptions = [
-            str(output_dir / f"{v_id}.{language_code}.vtt")
-            for v_id in ids
-            if (output_dir / f"{v_id}.{language_code}.vtt").is_file()
-        ]
-        return "\n".join(saved_transcriptions)
+        for status in youtube.download_transcriptions(ids, language_code, output_dir):
+            print(", ".join(f"{key}={value}" for key, value in status.items()))

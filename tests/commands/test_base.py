@@ -62,7 +62,7 @@ def test_data_from_csv_valid(mock_csv_file):
         with patch("builtins.open", mock_open(read_data=mock_csv_file)):
             data_column_name = "URL"
             file_path = Path("tests/data/csv_valid.csv")
-            result = Command.data_from_csv(file_path, data_column_name)
+            result = list(Command.data_from_csv(file_path, data_column_name))
             assert len(result) == 2
             assert result[0] == "http://example.com"
             assert result[1] == "http://example2.com"
@@ -77,7 +77,7 @@ def test_data_from_csv_file_not_found():
     with patch("pathlib.Path.is_file", return_value=False):
         file_path = Path("/fake/path/not_found.csv")
         with pytest.raises(FileNotFoundError):
-            Command.data_from_csv(file_path, "URL")
+            list(Command.data_from_csv(file_path, "URL"))
 
 
 def test_data_from_csv_column_not_found(mock_csv_file):
@@ -85,7 +85,7 @@ def test_data_from_csv_column_not_found(mock_csv_file):
         with patch("builtins.open", mock_open(read_data=mock_csv_file)):
             file_path = Path("tests/data/csv_column_not_found.csv")
             with pytest.raises(Exception) as exc_info:
-                Command.data_from_csv(file_path, "NonExistentColumn")
+                list(Command.data_from_csv(file_path, "NonExistentColumn"))
             assert f"Column NonExistentColumn not found on {file_path}" in str(exc_info.value)
 
 

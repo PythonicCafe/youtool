@@ -51,9 +51,7 @@ class Command:
         raise NotImplementedError()
 
     @staticmethod
-    def data_from_csv(
-        file_path: Path, data_column_name: Optional[str] = None, raise_column_exception: bool = True
-    ) -> List[str]:
+    def data_from_csv(file_path: Path, data_column_name: Optional[str] = None) -> List[str]:
         """Extracts a list of URLs from a specified CSV file.
 
         Args:
@@ -67,25 +65,19 @@ class Command:
         Raises:
             Exception: If the file path is invalid or the file cannot be found.
         """
-        data = []
-
-        if not file_path.is_file():
-            raise FileNotFoundError(f"Invalid file path: {file_path}")
-
-        with file_path.open("r", newline="") as csv_file:
+        if not file_path.exists():
+            raise FileNotFoundError(f"Invalid filename: {file_path}")
+        with file_path.open(mode="r") as csv_file:
             reader = csv.DictReader(csv_file)
             fieldnames = reader.fieldnames
-            if fieldnames is None:
-                raise ValueError("Fieldnames is None")
-            if data_column_name not in fieldnames:
-                if raise_column_exception:
-                    raise Exception(f"Column {data_column_name} not found on {file_path}")
-                return data
+            if not fieldnames:
+                raise ValueError(f"No fields found for file: {file_path}")
+            elif data_column_name not in fieldnames:
+                raise Exception(f"Column {data_column_name} not found on {file_path}")
             for row in reader:
                 value = row[data_column_name].strip()
                 if value:
-                    data.append(value)
-        return data
+                    yield value
 
     @classmethod
     def data_to_csv(cls, data: List[Dict], output_file_path: Optional[str] = None) -> str:
@@ -104,7 +96,7 @@ class Command:
         if output_file_path:
             output_path = Path(output_file_path)
 
-        with output_path.open("w", newline="") if output_path else StringIO() as csv_file:
+        with output_path.open(mode="w") if output_path else StringIO() as csv_file:
             writer = csv.DictWriter(csv_file, fieldnames=list(data[0].keys()) if data else [])
             writer.writeheader()
             writer.writerows(data)

@@ -65,9 +65,9 @@ class ChannelId(Command):
     @classmethod
     def resolve_urls(cls, urls, urls_file_path, url_column_name):
         if urls_file_path and not urls:
-            urls = cls.data_from_csv(
+            urls = list(cls.data_from_csv(
                 file_path=Path(urls_file_path), data_column_name=url_column_name or cls.URL_COLUMN_NAME
-            )
+            ))
 
         if not urls:
             raise Exception("Either 'username' or 'url' must be provided for the channel-id command")

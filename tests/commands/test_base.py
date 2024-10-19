@@ -88,7 +88,7 @@ def test_data_from_csv_valid(mock_csv_file):
     with patch('pathlib.Path.is_file', return_value=True):
         with patch('builtins.open', mock_open(read_data=mock_csv_file)):
             data_column_name = "URL"
-            file_path = Path("tests/resources/csv_valid.csv")
+            file_path = Path("tests/data/csv_valid.csv")
             result = Command.data_from_csv(file_path, data_column_name)
             assert len(result) == 2
             assert result[0] == "http://example.com"
@@ -108,7 +108,7 @@ def test_data_from_csv_file_not_found():
 def test_data_from_csv_column_not_found(mock_csv_file):
     with patch('pathlib.Path.is_file', return_value=True):
         with patch('builtins.open', mock_open(read_data=mock_csv_file)):
-            file_path = Path("tests/resources/csv_column_not_found.csv")
+            file_path = Path("tests/data/csv_column_not_found.csv")
             with pytest.raises(Exception) as exc_info:
                 Command.data_from_csv(file_path, "NonExistentColumn")
             assert f"Column NonExistentColumn not found on {file_path}" in str(exc_info.value)
@@ -129,9 +129,9 @@ def test_data_to_csv_with_output_file_path(tmp_path, sample_data):
     a CSV file when an output file path is provided.
     """
     output_file_path = tmp_path / "output.csv"
-    
+
     result_path = Command.data_to_csv(sample_data, str(output_file_path))
-    
+
     assert result_path == str(output_file_path)
     assert output_file_path.exists()
     with output_file_path.open('r') as f:
@@ -147,7 +147,7 @@ def test_data_to_csv_without_output_file_path(sample_data):
     as a string when no output file path is provided.
     """
     csv_content = Command.data_to_csv(sample_data)
-    
+
     assert "id,name" in csv_content
     assert "123,Channel One" in csv_content
     assert "456,Channel Two" in csv_content
@@ -180,14 +180,14 @@ def test_filter_fields():
         'videos': 50,
         'category': 'Tech'
     }
-    
+
     info_columns = ['channel_id', 'channel_name', 'subscribers']
     filtered_info = Command.filter_fields(channel_info, info_columns)
-    
+
     expected_result = {
         'channel_id': '123456',
         'channel_name': 'Test Channel',
         'subscribers': 1000
     }
-    
+
     assert filtered_info == expected_result, f"Expected {expected_result}, but got {filtered_info}"

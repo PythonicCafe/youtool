@@ -1,7 +1,7 @@
 import argparse
 import os
 
-from youtool.commands import COMMANDS
+from .commands import COMMANDS
 
 
 def main():
@@ -22,7 +22,7 @@ def main():
     parser = argparse.ArgumentParser(description="CLI Tool for managing YouTube videos add playlists")
     parser.add_argument("--api-key", type=str, help="YouTube API Key", dest="api_key")
     parser.add_argument("--debug", default=False, action="store_true", help="Debug mode", dest="debug")
-    
+
     subparsers = parser.add_subparsers(required=True, dest="command", title="Command", help="Command to be executed")
 
     for command in COMMANDS:
@@ -33,7 +33,7 @@ def main():
 
     if not args.api_key:
         parser.error("YouTube API Key is required")
-    
+
     try:
         print(args.func(**args.__dict__))
     except Exception as error:

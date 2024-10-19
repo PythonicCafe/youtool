@@ -6,6 +6,6 @@ services:
       dockerfile: "Dockerfile"
       args:
         - DEV_BUILD=true
-    user: "${UID}:${GID}"
+    user: "${UID:-1000}:${GID:-1000}"
     volumes:
       - ${PWD}:/app

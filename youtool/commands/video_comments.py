@@ -8,12 +8,12 @@ class VideoComments(Command):
     """Get comments from a video ID, generate CSV output (same schema for comment dicts)"""
 
     name = "video-comments"
-    arguments = [
-        {"name": "--id", "type": str, "help": "Video ID", "required": True},
-        {"name": "--output-file-path", "type": str, "help": "Output CSV file path"},
-    ]
-
     COMMENT_COLUMNS: List[str] = ["comment_id", "author_display_name", "text_display", "like_count", "published_at"]
+
+    @classmethod
+    def add_arguments(cls, parser):
+        parser.add_argument("--id", type=str, help="Video ID", required=True)
+        parser.add_argument("--output-file-path", type=str, help="Output CSV file path")
 
     @classmethod
     def execute(cls: Self, **kwargs) -> str:

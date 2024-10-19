@@ -8,16 +8,16 @@ class ChannelId(Command):
     """Get channel IDs from a list of URLs (or CSV filename with URLs inside), generate CSV output (just the IDs)."""
 
     name = "channel-id"
-    arguments = [
-        {"name": "--urls", "type": str, "help": "Channels urls", "nargs": "*"},
-        {"name": "--urls-file-path", "type": str, "help": "Channels urls csv file path"},
-        {"name": "--output-file-path", "type": str, "help": "Output csv file path"},
-        {"name": "--url-column-name", "type": str, "help": "URL column name on csv input files"},
-        {"name": "--id-column-name", "type": str, "help": "Channel ID column name on csv output files"},
-    ]
-
     URL_COLUMN_NAME: str = "channel_url"
     CHANNEL_ID_COLUMN_NAME: str = "channel_id"
+
+    @classmethod
+    def add_arguments(cls, parser):
+        parser.add_argument("--urls", type=str, help="Channels urls", nargs="*")
+        parser.add_argument("--urls-file-path", type=str, help="Channels urls csv file path")
+        parser.add_argument("--output-file-path", type=str, help="Output csv file path")
+        parser.add_argument("--url-column-name", type=str, help="URL column name on csv input files")
+        parser.add_argument("--id-column-name", type=str, help="Channel ID column name on csv output files")
 
     @classmethod
     def execute(cls, **kwargs) -> str:  # noqa: D417

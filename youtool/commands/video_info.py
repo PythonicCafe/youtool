@@ -9,13 +9,6 @@ class VideoInfo(Command):
     """Get video info from a list of IDs or URLs (or CSV filename with URLs/IDs inside), generate CSV output (same schema for video dicts)")"""
 
     name = "video-info"
-    arguments = [
-        {"name": "--ids", "type": str, "help": "Video IDs", "nargs": "*"},
-        {"name": "--urls", "type": str, "help": "Video URLs", "nargs": "*"},
-        {"name": "--input-file-path", "type": str, "help": "Input CSV file path with URLs/IDs"},
-        {"name": "--output-file-path", "type": str, "help": "Output CSV file path"},
-    ]
-
     ID_COLUMN_NAME: str = "video_id"
     URL_COLUMN_NAME: str = "video_url"
     INFO_COLUMNS: List[str] = [
@@ -27,6 +20,13 @@ class VideoInfo(Command):
         "like_count",
         "comment_count",
     ]
+
+    @classmethod
+    def add_arguments(cls, parser):
+        parser.add_argument("--ids", type=str, help="Video IDs", nargs="*")
+        parser.add_argument("--urls", type=str, help="Video URLs", nargs="*")
+        parser.add_argument("--input-file-path", type=str, help="Input CSV file path with URLs/IDs")
+        parser.add_argument("--output-file-path", type=str, help="Output CSV file path")
 
     @classmethod
     def execute(cls: Self, **kwargs) -> str:

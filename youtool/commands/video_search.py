@@ -11,16 +11,6 @@ class VideoSearch(Command):
     """
 
     name = "video-search"
-    arguments = [
-        {"name": "--ids", "type": str, "help": "Video IDs", "nargs": "*"},
-        {"name": "--urls", "type": str, "help": "Video URLs", "nargs": "*"},
-        {"name": "--input-file-path", "type": str, "help": "Input CSV file path with URLs/IDs"},
-        {"name": "--output-file-path", "type": str, "help": "Output CSV file path"},
-        {"name": "--full-info", "type": bool, "help": "Option to get full video info", "default": False},
-        {"name": "--url-column-name", "type": str, "help": "URL column name on csv input files"},
-        {"name": "--id-column-name", "type": str, "help": "Channel ID column name on csv output files"},
-    ]
-
     ID_COLUMN_NAME: str = "video_id"
     URL_COLUMN_NAME: str = "video_url"
     INFO_COLUMNS: List[str] = ["id", "title", "published_at", "view_count"]
@@ -33,6 +23,16 @@ class VideoSearch(Command):
         "like_count",
         "comment_count",
     ]
+
+    @classmethod
+    def add_arguments(cls, parser):
+        parser.add_argument("--ids", type=str, help="Video IDs", nargs="*")
+        parser.add_argument("--urls", type=str, help="Video URLs", nargs="*")
+        parser.add_argument("--input-file-path", type=str, help="Input CSV file path with URLs/IDs")
+        parser.add_argument("--output-file-path", type=str, help="Output CSV file path")
+        parser.add_argument("--full-info", type=bool, help="Option to get full video info", default=False)
+        parser.add_argument("--url-column-name", type=str, help="URL column name on csv input files")
+        parser.add_argument("--id-column-name", type=str, help="Channel ID column name on csv output files")
 
     @classmethod
     def execute(cls: Self, **kwargs) -> str:

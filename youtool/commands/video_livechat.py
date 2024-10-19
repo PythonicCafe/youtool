@@ -8,11 +8,12 @@ class VideoLiveChat(Command):
     """Get live chat comments from a video ID, generate CSV output (same schema for chat_message dicts)"""
 
     name = "video-livechat"
-    arguments = [
-        {"name": "--id", "type": str, "help": "Video ID", "required": True},
-        {"name": "--output-file-path", "type": str, "help": "Output CSV file path"},
-        {"name": "--expand-emojis", "type": bool, "help": "Expand emojis in chat messages", "default": True},
-    ]
+
+    @classmethod
+    def add_arguments(cls, parser):
+        parser.add_argument("--id", type=str, help="Video ID", required=True)
+        parser.add_argument("--output-file-path", type=str, help="Output CSV file path")
+        parser.add_argument("--expand-emojis", type=bool, help="Expand emojis in chat messages", default=True)
 
     @classmethod
     def execute(cls: Self, **kwargs) -> str:

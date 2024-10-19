@@ -2,7 +2,7 @@ import argparse
 import csv
 from io import StringIO
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from urllib.parse import parse_qsl, urlparse
 
 
@@ -11,43 +11,15 @@ class Command:
 
     Attributes:
         name (str): The name of the command.
-        arguments (List[Dict[str, Any]]): A list of dictionaries, each representing an argument for the command.
     """
 
     name: str
-    arguments: List[Dict[str, Any]]
 
     @staticmethod
     def video_id_from_url(video_url: str) -> Optional[str]:
         parsed_url = urlparse(video_url)
         parsed_url_query = dict(parse_qsl(parsed_url.query))
         return parsed_url_query.get("v")
-
-    @classmethod
-    def generate_parser(cls, subparsers: argparse._SubParsersAction):
-        """Creates a parser for the command and adds it to the subparsers.
-
-        Args:
-            subparsers (argparse._SubParsersAction): The subparsers action to add the parser to.
-
-        Returns:
-            argparse.ArgumentParser: The parser for the command.
-        """
-        return subparsers.add_parser(cls.name, help=cls.__doc__)
-
-    @classmethod
-    def parse_arguments(cls, subparsers: argparse._SubParsersAction) -> None:
-        """Parses the arguments for the command and sets the command's execute method as the default function to call.
-
-        Args:
-            subparsers (argparse._SubParsersAction): The subparsers action to add the parser to.
-        """
-        parser = cls.generate_parser(subparsers)
-        for argument in cls.arguments:
-            argument_copy = {**argument}
-            argument_name = argument_copy.pop("name")
-            parser.add_argument(argument_name, **argument_copy)
-        parser.set_defaults(func=cls.execute)
 
     @staticmethod
     def filter_fields(video_info: Dict, info_columns: Optional[List] = None) -> Dict:

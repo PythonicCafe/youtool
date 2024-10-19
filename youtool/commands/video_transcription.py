@@ -9,19 +9,19 @@ class VideoTranscription(Command):
     Download files to destination and report results."""
 
     name = "video-transcription"
-    arguments = [
-        {"name": "--ids", "type": str, "help": "Video IDs", "nargs": "*"},
-        {"name": "--urls", "type": str, "help": "Video URLs", "nargs": "*"},
-        {"name": "--input-file-path", "type": str, "help": "CSV file path containing video IDs or URLs"},
-        {"name": "--output-dir", "type": str, "help": "Output directory to save transcriptions"},
-        {"name": "--language-code", "type": str, "help": "Language code for transcription"},
-        {"name": "--api-key", "type": str, "help": "API key for YouTube Data API"},
-        {"name": "--url-column-name", "type": str, "help": "URL column name on csv input files"},
-        {"name": "--id-column-name", "type": str, "help": "Channel ID column name on csv output files"},
-    ]
-
     ID_COLUMN_NAME: str = "video_id"
     URL_COLUMN_NAME: str = "video_url"
+
+    @classmethod
+    def add_arguments(cls, parser):
+        parser.add_argument("--ids", type=str, help="Video IDs", nargs="*")
+        parser.add_argument("--urls", type=str, help="Video URLs", nargs="*")
+        parser.add_argument("--input-file-path", type=str, help="CSV file path containing video IDs or URLs")
+        parser.add_argument("--output-dir", type=str, help="Output directory to save transcriptions")
+        parser.add_argument("--language-code", type=str, help="Language code for transcription")
+        parser.add_argument("--api-key", type=str, help="API key for YouTube Data API")
+        parser.add_argument("--url-column-name", type=str, help="URL column name on csv input files")
+        parser.add_argument("--id-column-name", type=str, help="Channel ID column name on csv output files")
 
     @classmethod
     def execute(cls, **kwargs) -> str:

@@ -1,7 +1,7 @@
 import argparse
 import csv
 from pathlib import Path
-from unittest.mock import MagicMock, mock_open, patch
+from unittest.mock import mock_open, patch
 
 import pytest
 
@@ -22,37 +22,6 @@ def subparsers():
     """Fixture to create subparsers for argument parsing."""
     parser = argparse.ArgumentParser()
     return parser.add_subparsers()
-
-
-def test_generate_parser(subparsers):
-    """Test to verify the parser generation.
-
-    This test checks if the `generate_parser` method correctly generates a parser
-    for the command and sets the appropriate properties
-    """
-    parser = TestCommand.generate_parser(subparsers)
-
-    assert parser is not None, "Parser should not be None"
-    assert isinstance(parser, argparse.ArgumentParser), "Parser should be an instance of argparse.ArgumentParser"
-    assert parser.prog.endswith(TestCommand.name), f"Parser prog should end with '{TestCommand.name}'"
-
-
-def test_parse_arguments(subparsers):
-    """Test to verify argument parsing.
-
-    This test checks if the `parse_arguments` method correctly adds the command's
-    arguments to the parser and sets the default function to the command's execute method.
-    """
-    subparsers_mock = MagicMock(spec=subparsers)
-
-    TestCommand.parse_arguments(subparsers_mock)
-
-    subparsers_mock.add_parser.assert_called_once_with(TestCommand.name, help=TestCommand.__doc__)
-    parser_mock = subparsers_mock.add_parser.return_value
-    parser_mock.add_argument.assert_called_once_with(
-        "--test-arg", help="Test argument", default="default_value", type=str
-    )
-    parser_mock.set_defaults.assert_called_once_with(func=TestCommand.execute)
 
 
 def test_command():

@@ -10,19 +10,6 @@ class ChannelInfo(Command):
     """
 
     name = "channel-info"
-    arguments = [
-        {"name": "--urls", "type": str, "help": "Channel URLs", "nargs": "*"},
-        {"name": "--usernames", "type": str, "help": "Channel usernames", "nargs": "*"},
-        {"name": "--ids", "type": str, "help": "Channel IDs", "nargs": "*"},
-        {"name": "--urls-file-path", "type": str, "help": "Channel URLs CSV file path"},
-        {"name": "--usernames-file-path", "type": str, "help": "Channel usernames CSV file path"},
-        {"name": "--ids-file-path", "type": str, "help": "Channel IDs CSV file path"},
-        {"name": "--output-file-path", "type": str, "help": "Output CSV file path"},
-        {"name": "--url-column-name", "type": str, "help": "URL column name on CSV input files"},
-        {"name": "--username-column-name", "type": str, "help": "Username column name on CSV input files"},
-        {"name": "--id-column-name", "type": str, "help": "ID column name on CSV input files"},
-    ]
-
     URL_COLUMN_NAME: str = "channel_url"
     USERNAME_COLUMN_NAME: str = "channel_username"
     ID_COLUMN_NAME: str = "channel_id"
@@ -35,6 +22,19 @@ class ChannelInfo(Command):
         "subscriber_count",
         "video_count",
     ]
+
+    @classmethod
+    def add_arguments(cls, parser):
+        parser.add_argument("--urls", type=str, help="Channel URLs", nargs="*")
+        parser.add_argument("--usernames", type=str, help="Channel usernames", nargs="*")
+        parser.add_argument("--ids", type=str, help="Channel IDs", nargs="*")
+        parser.add_argument("--urls-file-path", type=str, help="Channel URLs CSV file path")
+        parser.add_argument("--usernames-file-path", type=str, help="Channel usernames CSV file path")
+        parser.add_argument("--ids-file-path", type=str, help="Channel IDs CSV file path")
+        parser.add_argument("--output-file-path", type=str, help="Output CSV file path")
+        parser.add_argument("--url-column-name", type=str, help="URL column name on CSV input files")
+        parser.add_argument("--username-column-name", type=str, help="Username column name on CSV input files")
+        parser.add_argument("--id-column-name", type=str, help="ID column name on CSV input files")
 
     @staticmethod
     def filter_fields(channel_info: Dict, info_columns: Optional[List] = None):

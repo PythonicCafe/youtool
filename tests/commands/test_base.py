@@ -170,3 +170,24 @@ def test_data_to_csv_output(tmp_path):
     result = Command.data_to_csv(data, str(output_file_path))
     assert Path(output_file_path).is_file()
     assert expected_output == Path(output_file_path).read_text()
+    assert str(output_file_path) == result
+
+def test_filter_fields():
+    channel_info = {
+        'channel_id': '123456',
+        'channel_name': 'Test Channel',
+        'subscribers': 1000,
+        'videos': 50,
+        'category': 'Tech'
+    }
+    
+    info_columns = ['channel_id', 'channel_name', 'subscribers']
+    filtered_info = Command.filter_fields(channel_info, info_columns)
+    
+    expected_result = {
+        'channel_id': '123456',
+        'channel_name': 'Test Channel',
+        'subscribers': 1000
+    }
+    
+    assert filtered_info == expected_result, f"Expected {expected_result}, but got {filtered_info}"

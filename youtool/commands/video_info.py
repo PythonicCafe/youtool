@@ -27,7 +27,7 @@ class VideoInfo(Command):
         parser.add_argument(
             "--api-key", type=str, help="YouTube API Key", dest="api_key", default=os.environ.get("YOUTUBE_API_KEY")
         )
-        parser.add_argument("--ids", type=str, help="Video IDs", nargs="*")
+        parser.add_argument("id", type=str, help="Video IDs", nargs="+")
         parser.add_argument("--urls", type=str, help="Video URLs", nargs="*")
         parser.add_argument("--input-file-path", type=str, help="Input CSV file path with URLs/IDs")
         parser.add_argument("--output-file-path", type=str, help="Output CSV file path")
@@ -58,7 +58,7 @@ class VideoInfo(Command):
             Exception: If neither ids, urls, nor input_file_path is provided.
         """
 
-        ids = kwargs.get("ids", [])
+        ids = kwargs.get("id", [])
         urls = kwargs.get("urls", [])
         input_file_path = kwargs.get("input_file_path")
         output_file_path = kwargs.get("output_file_path")

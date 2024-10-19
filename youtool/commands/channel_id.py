@@ -13,7 +13,7 @@ class ChannelId(Command):
 
     @classmethod
     def add_arguments(cls, parser):
-        parser.add_argument("--urls", type=str, help="Channels urls", nargs="*")
+        parser.add_argument("url", type=str, help="Channels urls", nargs="+")
         parser.add_argument("--urls-file-path", type=str, help="Channels urls csv file path")
         parser.add_argument("--output-file-path", type=str, help="Output csv file path")
         parser.add_argument("--url-column-name", type=str, help="URL column name on csv input files")
@@ -44,7 +44,7 @@ class ChannelId(Command):
         Raises:
             Exception: If neither urls nor urls_file_path is provided.
         """
-        urls = kwargs.get("urls")
+        urls = kwargs.get("url")
         urls_file_path = kwargs.get("urls_file_path")
         output_file_path = kwargs.get("output_file_path")
 

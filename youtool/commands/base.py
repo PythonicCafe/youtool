@@ -135,10 +135,6 @@ class Command:
         """
         if output_file_path:
             output_path = Path(output_file_path)
-            if output_path.is_dir():
-                command_name = cls.name.replace("-", "_")
-                timestamp = datetime.now().strftime("%M%S%f")
-                output_file_path = output_path / f"{command_name}_{timestamp}.csv"
 
         with Path(output_file_path).open("w", newline="") if output_file_path else StringIO() as csv_file:
             writer = csv.DictWriter(csv_file, fieldnames=list(data[0].keys()) if data else [])

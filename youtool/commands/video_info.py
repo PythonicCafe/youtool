@@ -63,6 +63,8 @@ class VideoInfo(Command):
         input_file_path = kwargs.get("input_file_path")
         output_file_path = kwargs.get("output_file_path")
         api_key = kwargs.get("api_key")
+        if api_key is None:
+            raise ValueError("You must specify either --api-key or set YOUTUBE_API_KEY for this command")
 
         info_columns = kwargs.get("info_columns")
 

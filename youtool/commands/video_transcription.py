@@ -43,6 +43,7 @@ class VideoTranscription(Command):
         urls = kwargs.get("urls") or []
         input_file_path = kwargs.get("input_file_path")
         output_dir = kwargs.get("output_dir")
+        output_dir = Path(output_dir) if output_dir else Path.cwd()
         language_code = kwargs.get("language_code")
 
         url_column_name = kwargs.get("url_column_name", cls.URL_COLUMN_NAME)
@@ -65,10 +66,9 @@ class VideoTranscription(Command):
         # Remove duplicated
         ids = list(set(ids))
         youtube.videos_transcriptions(ids, language_code, output_dir)
-        output_dir_path = Path(output_dir)
         saved_transcriptions = [
-            str(output_dir_path / f"{v_id}.{language_code}.vtt")
+            str(output_dir / f"{v_id}.{language_code}.vtt")
             for v_id in ids
-            if (output_dir_path / f"{v_id}.{language_code}.vtt").is_file()
+            if (output_dir / f"{v_id}.{language_code}.vtt").is_file()
         ]
         return "\n".join(saved_transcriptions)

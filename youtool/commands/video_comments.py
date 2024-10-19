@@ -37,6 +37,8 @@ class VideoComments(Command):
         video_id = kwargs.get("id")
         output_file_path = kwargs.get("output_file_path")
         api_key = kwargs.get("api_key")
+        if api_key is None:
+            raise ValueError("You must specify either --api-key or set YOUTUBE_API_KEY for this command")
 
         youtube = YouTube([api_key], disable_ipv6=True)
         comments = list(youtube.video_comments(video_id))

@@ -94,6 +94,8 @@ class ChannelInfo(Command):
         usernames_file_path = kwargs.get("usernames_file_path")
         output_file_path = kwargs.get("output_file_path")
         api_key = kwargs.get("api_key")
+        if api_key is None:
+            raise ValueError("You must specify either --api-key or set YOUTUBE_API_KEY for this command")
 
         url_column_name = kwargs.get("url_column_name")
         username_column_name = kwargs.get("username_column_name")

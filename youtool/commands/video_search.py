@@ -66,6 +66,8 @@ class VideoSearch(Command):
         output_file_path = kwargs.get("output_file_path")
         api_key = kwargs.get("api_key")
         full_info = kwargs.get("full_info", False)
+        if api_key is None:
+            raise ValueError("You must specify either --api-key or set YOUTUBE_API_KEY for this command")
 
         url_column_name = kwargs.get("url_column_name", cls.URL_COLUMN_NAME)
         id_column_name = kwargs.get("id_column_name", cls.ID_COLUMN_NAME)

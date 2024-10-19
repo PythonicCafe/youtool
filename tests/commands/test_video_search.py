@@ -27,7 +27,7 @@ def test_video_search_string_output(mocker, videos_ids, videos_urls):
     videos_infos_mock = Mock(return_value=expected_videos_infos)
     youtube_mock.return_value.videos_infos = videos_infos_mock
 
-    result = VideoSearch.execute(ids=videos_ids, urls=videos_urls)
+    result = VideoSearch.execute(ids=videos_ids, urls=videos_urls, api_key="test")
 
     videos_infos_mock.assert_called_once_with(list(set(videos_ids)))
     assert result == csv_file.getvalue()
@@ -56,7 +56,9 @@ def test_video_search_file_output(mocker, videos_ids, videos_urls, tmp_path):
     videos_infos_mock = Mock(return_value=expected_videos_infos)
     youtube_mock.return_value.videos_infos = videos_infos_mock
 
-    result_file_path = VideoSearch.execute(ids=videos_ids, urls=videos_urls, output_file_path=output_file_path)
+    result_file_path = VideoSearch.execute(
+        ids=videos_ids, urls=videos_urls, output_file_path=output_file_path, api_key="test"
+    )
 
     with open(result_file_path, "r") as result_csv_file:
         result_csv = result_csv_file.read()
@@ -75,4 +77,4 @@ def test_video_search_no_id_and_url_error():
         - Assert that the raised exception matches the expected error message.
     """
     with pytest.raises(Exception, match="Either 'ids' or 'urls' must be provided"):
-        VideoSearch.execute(ids=None, urls=None)
+        VideoSearch.execute(ids=None, urls=None, api_key="test")

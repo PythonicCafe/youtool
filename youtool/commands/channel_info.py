@@ -1,5 +1,6 @@
 import os
 from typing import Dict, List, Optional, Self
+from pathlib import Path
 
 from .. import YouTube
 from .base import Command
@@ -35,7 +36,7 @@ class ChannelInfo(Command):
         parser.add_argument("--urls-file-path", type=str, help="Channel URLs CSV file path")
         parser.add_argument("--usernames-file-path", type=str, help="Channel usernames CSV file path")
         parser.add_argument("--ids-file-path", type=str, help="Channel IDs CSV file path")
-        parser.add_argument("--output-file-path", type=str, help="Output CSV file path")
+        parser.add_argument("--output-filename", "-o", type=Path, help="Output CSV file path")
         parser.add_argument("--url-column-name", type=str, help="URL column name on CSV input files")
         parser.add_argument("--username-column-name", type=str, help="Username column name on CSV input files")
         parser.add_argument("--id-column-name", type=str, help="ID column name on CSV input files")
@@ -71,7 +72,7 @@ class ChannelInfo(Command):
             usernames (list[str], optional): A list of YouTube channel usernames. If not provided, `usernames_file_path` must be specified.
             urls_file_path (str, optional): Path to a CSV file containing YouTube channel URLs.
             usernames_file_path (str, optional): Path to a CSV file containing YouTube channel usernames.
-            output_file_path (str, optional): Path to the output CSV file where channel information will be saved.
+            output_filename: Path to the output CSV file where channel information will be saved.
             api_key (str): The API key to authenticate with the YouTube Data API.
             url_column_name (str, optional): The name of the column in the `urls_file_path` CSV file that contains the URLs.
                                             Default is "channel_url".
@@ -81,7 +82,7 @@ class ChannelInfo(Command):
                                             Default is the class attribute `INFO_COLUMNS`.
 
         Returns:
-            str: A message indicating the result of the command. If `output_file_path` is specified, the message will
+            str: A message indicating the result of the command. If `output_filename` is specified, the message will
                 include the path to the generated CSV file. Otherwise, it will return the result as a string.
 
         Raises:
@@ -92,7 +93,7 @@ class ChannelInfo(Command):
         usernames = kwargs.get("usernames")
         urls_file_path = kwargs.get("urls_file_path")
         usernames_file_path = kwargs.get("usernames_file_path")
-        output_file_path = kwargs.get("output_file_path")
+        output_filename = kwargs.get("output_filename")
         api_key = kwargs.get("api_key")
         if api_key is None:
             raise ValueError("You must specify either --api-key or set YOUTUBE_API_KEY for this command")
@@ -125,5 +126,5 @@ class ChannelInfo(Command):
                 ChannelInfo.filter_fields(channel_info, info_columns)
                 for channel_info in youtube.channels_infos(channel_ids)
             ],
-            output_file_path=output_file_path,
+            output_filename=output_filename,
         )

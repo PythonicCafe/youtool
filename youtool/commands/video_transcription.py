@@ -52,9 +52,9 @@ class VideoTranscription(Command):
         youtube = YouTube([None], disable_ipv6=True)
 
         if input_file_path := kwargs.get("input_file_path"):
-            if urls_from_csv := list(cls.data_from_csv(input_file_path, url_column_name, False)):
+            if urls_from_csv := list(cls.data_from_csv(input_file_path, url_column_name)):
                 ids += [cls.video_id_from_url(url) for url in urls_from_csv]
-            if ids_from_csv := list(cls.data_from_csv(input_file_path, id_column_name, False)):
+            if ids_from_csv := list(cls.data_from_csv(input_file_path, id_column_name)):
                 ids += ids_from_csv
 
         if not ids and not urls:

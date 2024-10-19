@@ -55,12 +55,11 @@ def test_video_search_file_output(mocker, videos_ids, videos_urls, tmp_path):
 
     videos_infos_mock = Mock(return_value=expected_videos_infos)
     youtube_mock.return_value.videos_infos = videos_infos_mock
-
-    result_file_path = VideoSearch.execute(
-        ids=videos_ids, urls=videos_urls, output_file_path=output_file_path, api_key="test"
+    VideoSearch.execute(
+        ids=videos_ids, urls=videos_urls, output_filename=output_file_path, api_key="test"
     )
-
-    with open(result_file_path, "r") as result_csv_file:
+    assert output_file_path.exists()
+    with output_file_path.open(mode="r") as result_csv_file:
         result_csv = result_csv_file.read()
 
     videos_infos_mock.assert_called_once_with(list(set(videos_ids)))

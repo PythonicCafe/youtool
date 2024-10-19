@@ -1,5 +1,6 @@
 import os
 from typing import List, Self
+from pathlib import Path
 
 from .. import YouTube
 from .base import Command
@@ -17,7 +18,7 @@ class VideoComments(Command):
             "--api-key", type=str, help="YouTube API Key", dest="api_key", default=os.environ.get("YOUTUBE_API_KEY")
         )
         parser.add_argument("--id", type=str, help="Video ID", required=True)
-        parser.add_argument("--output-file-path", type=str, help="Output CSV file path")
+        parser.add_argument("--output-filename", "-o", type=Path, help="Output CSV file path")
 
     @classmethod
     def execute(cls: Self, **kwargs) -> str:
@@ -26,20 +27,20 @@ class VideoComments(Command):
 
         Args:
             id (str): The ID of the YouTube video.
-            output_file_path (str): Path to the output CSV file where comments will be saved.
+            output_filename: Path to the output CSV file where comments will be saved.
             api_key (str): The API key to authenticate with the YouTube Data API.
 
         Returns:
-            A message indicating the result of the command. If output_file_path is specified,
+            A message indicating the result of the command. If output_filename is specified,
             the message will include the path to the generated CSV file.
             Otherwise, it will return the result as a string.
         """
         video_id = kwargs.get("id")
-        output_file_path = kwargs.get("output_file_path")
+        output_filename = kwargs.get("output_filename")
         api_key = kwargs.get("api_key")
         if api_key is None:
             raise ValueError("You must specify either --api-key or set YOUTUBE_API_KEY for this command")
 
         youtube = YouTube([api_key], disable_ipv6=True)
         comments = list(youtube.video_comments(video_id))
-        return cls.data_to_csv(data=comments, output_file_path=output_file_path)
+        return cls.data_to_csv(data=comments, output_filename=output_filename)

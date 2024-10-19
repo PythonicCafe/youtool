@@ -1,7 +1,7 @@
 import csv
 from io import StringIO
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 from urllib.parse import parse_qsl, urlparse
 
 
@@ -80,24 +80,20 @@ class Command:
                     yield value
 
     @classmethod
-    def data_to_csv(cls, data: List[Dict], output_file_path: Optional[str] = None) -> str:
-        """Converts a list of channel IDs into a CSV file.
+    def data_to_csv(cls, data: List[Dict], output_filename: Optional[Path] = None) -> Union[str, None]:
+        """Converts a list of dicts into a CSV file (or CSV string, if filename is not provided).
 
         Parameters:
-        channels_ids (List[str]): List of channel IDs to be written to the CSV.
-        output_file_path (str, optional): Path to the file where the CSV will be saved. If not provided, the CSV will be returned as a string.
-        channel_id_column_name (str, optional): Name of the column in the CSV that will contain the channel IDs.
-                                                If not provided, the default value defined in ChannelId.CHANNEL_ID_COLUMN_NAME will be used.
+        data: List of channel IDs to be written to the CSV.
+        output_filename: Path to the file where the CSV will be saved. If not provided, the CSV will be returned as a
+                         string.
 
         Returns:
-        str: The path of the created CSV file or, if no path is provided, the contents of the CSV as a string.
+        str: If no path is provided, the contents of the CSV as a string.
         """
-        output_path = None
-        if output_file_path:
-            output_path = Path(output_file_path)
-
-        with output_path.open(mode="w") if output_path else StringIO() as csv_file:
+        with output_filename.open(mode="w") if output_filename else StringIO() as csv_file:
             writer = csv.DictWriter(csv_file, fieldnames=list(data[0].keys()) if data else [])
             writer.writeheader()
             writer.writerows(data)
-            return str(output_file_path) if output_file_path else csv_file.getvalue()
+            if not output_filename:
+                return csv_file.getvalue()

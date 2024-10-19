@@ -1,5 +1,6 @@
 import os
 from typing import List, Self
+from pathlib import Path
 
 from .. import YouTube
 from .base import Command
@@ -33,7 +34,7 @@ class VideoSearch(Command):
         parser.add_argument("--ids", type=str, help="Video IDs", nargs="*")
         parser.add_argument("--urls", type=str, help="Video URLs", nargs="*")
         parser.add_argument("--input-file-path", type=str, help="Input CSV file path with URLs/IDs")
-        parser.add_argument("--output-file-path", type=str, help="Output CSV file path")
+        parser.add_argument("--output-filename", "-o", type=Path, help="Output CSV file path")
         parser.add_argument("--full-info", type=bool, help="Option to get full video info", default=False)
         parser.add_argument("--url-column-name", type=str, help="URL column name on csv input files")
         parser.add_argument("--id-column-name", type=str, help="Channel ID column name on csv output files")
@@ -47,14 +48,14 @@ class VideoSearch(Command):
             ids (list[str], optional): A list of YouTube video IDs. If not provided, input_file_path must be specified.
             urls (list[str], optional): A list of YouTube video URLs. If not provided, input_file_path must be specified.
             input_file_path (str, optional): Path to a CSV file containing YouTube video URLs or IDs.
-            output_file_path (str, optional): Path to the output CSV file where video information will be saved.
+            output_filename: Path to the output CSV file where video information will be saved.
             api_key (str): The API key to authenticate with the YouTube Data API.
             full_info (bool, optional): Flag to indicate whether to get full video info. Default is False.
             url_column_name (str, optional): The name of the column in the input CSV file that contains the URLs. Default is "video_url".
             id_column_name (str, optional): The name of the column in the input CSV file that contains the IDs. Default is "video_id".
 
         Returns:
-            str: A message indicating the result of the command. If output_file_path is specified,
+            str: A message indicating the result of the command. If output_filename is specified,
             the message will include the path to the generated CSV file.
             Otherwise, it will return the result as a string.
 
@@ -63,7 +64,7 @@ class VideoSearch(Command):
         """
         ids = kwargs.get("ids", [])
         urls = kwargs.get("urls", [])
-        output_file_path = kwargs.get("output_file_path")
+        output_filename = kwargs.get("output_filename")
         api_key = kwargs.get("api_key")
         full_info = kwargs.get("full_info", False)
         if api_key is None:
@@ -94,5 +95,5 @@ class VideoSearch(Command):
 
         return cls.data_to_csv(
             data=[VideoSearch.filter_fields(video_info, info_columns) for video_info in videos_infos],
-            output_file_path=output_file_path,
+            output_filename=output_filename,
         )

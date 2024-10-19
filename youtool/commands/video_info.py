@@ -1,6 +1,7 @@
 import csv
 import os
 from typing import List, Self
+from pathlib import Path
 
 from .. import YouTube
 from .base import Command
@@ -30,7 +31,7 @@ class VideoInfo(Command):
         parser.add_argument("id", type=str, help="Video IDs", nargs="+")
         parser.add_argument("--urls", type=str, help="Video URLs", nargs="*")
         parser.add_argument("--input-file-path", type=str, help="Input CSV file path with URLs/IDs")
-        parser.add_argument("--output-file-path", type=str, help="Output CSV file path")
+        parser.add_argument("--output-filename", "-o", type=Path, help="Output CSV file path")
 
     @classmethod
     def execute(cls: Self, **kwargs) -> str:
@@ -41,7 +42,7 @@ class VideoInfo(Command):
             ids (list[str], optional): A list of YouTube video IDs. If not provided, input_file_path must be specified.
             urls (list[str], optional): A list of YouTube video URLs. If not provided, input_file_path must be specified.
             input_file_path (str, optional): Path to a CSV file containing YouTube video URLs or IDs.
-            output_file_path (str, optional): Path to the output CSV file where video information will be saved.
+            output_filename: Path to the output CSV file where video information will be saved.
             api_key (str): The API key to authenticate with the YouTube Data API.
             url_column_name (str, optional): The name of the column in the input_file_path CSV file that contains the URLs.
                                             Default is "video_url".
@@ -51,7 +52,7 @@ class VideoInfo(Command):
                                             Default is the class attribute INFO_COLUMNS.
 
         Returns:
-            str: A message indicating the result of the command. If output_file_path is specified, the message will
+            str: A message indicating the result of the command. If output_filename is specified, the message will
                 include the path to the generated CSV file. Otherwise, it will return the result as a string.
 
         Raises:
@@ -61,7 +62,7 @@ class VideoInfo(Command):
         ids = kwargs.get("id", [])
         urls = kwargs.get("urls", [])
         input_file_path = kwargs.get("input_file_path")
-        output_file_path = kwargs.get("output_file_path")
+        output_filename = kwargs.get("output_filename")
         api_key = kwargs.get("api_key")
         if api_key is None:
             raise ValueError("You must specify either --api-key or set YOUTUBE_API_KEY for this command")
@@ -94,5 +95,5 @@ class VideoInfo(Command):
         videos_infos = list(youtube.videos_infos([_id for _id in ids if _id]))
         return cls.data_to_csv(
             data=[VideoInfo.filter_fields(video_info, info_columns) for video_info in videos_infos],
-            output_file_path=output_file_path,
+            output_filename=output_filename,
         )

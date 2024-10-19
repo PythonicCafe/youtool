@@ -102,10 +102,8 @@ def test_data_to_csv_with_output_file_path(tmp_path, sample_data):
     a CSV file when an output file path is provided.
     """
     output_file_path = tmp_path / "output.csv"
+    result_path = Command.data_to_csv(sample_data, output_file_path)
 
-    result_path = Command.data_to_csv(sample_data, str(output_file_path))
-
-    assert result_path == str(output_file_path)
     assert output_file_path.exists()
     with output_file_path.open("r") as f:
         reader = csv.DictReader(f)
@@ -135,14 +133,12 @@ def test_data_to_csv_output(tmp_path):
     to the output CSV file.
     """
     output_file_path = tmp_path / "output.csv"
-
     data = [{"id": 1, "name": "Test1"}, {"id": 2, "name": "Test2"}]
 
     expected_output = "id,name\n1,Test1\n2,Test2\n"
-    result = Command.data_to_csv(data, str(output_file_path))
+    Command.data_to_csv(data, output_file_path)
     assert Path(output_file_path).is_file()
     assert expected_output == Path(output_file_path).read_text()
-    assert str(output_file_path) == result
 
 
 def test_filter_fields():

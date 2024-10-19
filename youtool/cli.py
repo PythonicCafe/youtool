@@ -34,7 +34,7 @@ def main():
     try:
         result = args.func(**args.__dict__)
         if result:
-            print(result)
+            print(result, end="")
     except Exception as error:
         import traceback
 

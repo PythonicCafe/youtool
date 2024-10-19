@@ -1,4 +1,5 @@
 from typing import Self
+from pathlib import Path
 
 from .. import YouTube
 from .base import Command
@@ -12,7 +13,7 @@ class VideoLiveChat(Command):
     @classmethod
     def add_arguments(cls, parser):
         parser.add_argument("--id", type=str, help="Video ID", required=True)
-        parser.add_argument("--output-file-path", type=str, help="Output CSV file path")
+        parser.add_argument("--output-filename", "-o", type=Path, help="Output CSV file path")
         parser.add_argument("--expand-emojis", type=bool, help="Expand emojis in chat messages", default=True)
 
     @classmethod
@@ -22,18 +23,18 @@ class VideoLiveChat(Command):
 
         Args:
             id (str): The ID of the YouTube video.
-            output_file_path (str): Path to the output CSV file where chat messages will be saved.
+            output_filename: Path to the output CSV file where chat messages will be saved.
             expand_emojis (bool): Whether to expand emojis in chat messages. Defaults to True.
 
         Returns:
-            A message indicating the result of the command. If output_file_path is specified,
+            A message indicating the result of the command. If output_filename is specified,
             the message will include the path to the generated CSV file.
             Otherwise, it will return the result as a string.
         """
         video_id = kwargs.get("id")
-        output_file_path = kwargs.get("output_file_path")
+        output_filename = kwargs.get("output_filename")
         expand_emojis = kwargs.get("expand_emojis", True)
 
         yt = YouTube([None], disable_ipv6=True)
         chat_messages = yt.video_livechat(video_id, expand_emojis=expand_emojis)
-        return cls.data_to_csv(list(chat_messages), output_file_path)
+        return cls.data_to_csv(list(chat_messages), output_filename)

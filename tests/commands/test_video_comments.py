@@ -54,11 +54,9 @@ def test_video_comments_with_file_output(mocker, tmp_path):
     videos_comments_mock = Mock(return_value=expected_result)
     youtube_mock.return_value.video_comments = videos_comments_mock
 
-    result_file_path = VideoComments.execute(id=video_id, output_file_path=output_file_path, api_key="test")
-
-    with open(result_file_path, "r") as result_csv_file:
+    VideoComments.execute(id=video_id, output_filename=output_file_path, api_key="test")
+    assert output_file_path.exists()
+    with output_file_path.open(mode="r") as result_csv_file:
         result_csv = result_csv_file.read()
-
     videos_comments_mock.assert_called_once_with(video_id)
-
     assert result_csv.replace("\r", "") == csv_file.getvalue().replace("\r", "")

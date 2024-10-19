@@ -1,20 +1,20 @@
-import csv
 import argparse
-
-from typing import List, Dict, Any, Optional
+import csv
+from datetime import datetime
 from io import StringIO
 from pathlib import Path
-from datetime import datetime
-from urllib.parse import urlparse, parse_qsl
+from typing import Any, Dict, List, Optional
+from urllib.parse import parse_qsl, urlparse
 
 
 class Command:
     """A base class for commands to inherit from, following a specific structure.
-    
+
     Attributes:
         name (str): The name of the command.
         arguments (List[Dict[str, Any]]): A list of dictionaries, each representing an argument for the command.
     """
+
     name: str
     arguments: List[Dict[str, Any]]
 
@@ -56,17 +56,18 @@ class Command:
 
         Args:
             video_info (Dict): A dictionary containing video information.
-            info_columns (Optional[List], optional): A list specifying which fields to include in the filtered output. 
+            info_columns (Optional[List], optional): A list specifying which fields to include in the filtered output.
             If None, returns the entire video_info dictionary. Defaults to None.
 
         Returns:
-            A dictionary containing only the fields specified in info_columns (if provided) 
+            A dictionary containing only the fields specified in info_columns (if provided)
             or the entire video_info dictionary if info_columns is None.
         """
-        return {
-            field: value for field, value in video_info.items() if field in info_columns
-        } if info_columns else video_info
-
+        return (
+            {field: value for field, value in video_info.items() if field in info_columns}
+            if info_columns
+            else video_info
+        )
 
     @classmethod
     def execute(cls, **kwargs) -> str:  # noqa: D417
@@ -81,9 +82,7 @@ class Command:
 
     @staticmethod
     def data_from_csv(
-        file_path: Path,
-        data_column_name: Optional[str] = None,
-        raise_column_exception: bool = True
+        file_path: Path, data_column_name: Optional[str] = None, raise_column_exception: bool = True
     ) -> List[str]:
         """Extracts a list of URLs from a specified CSV file.
 
@@ -103,7 +102,7 @@ class Command:
         if not file_path.is_file():
             raise FileNotFoundError(f"Invalid file path: {file_path}")
 
-        with file_path.open('r', newline='') as csv_file:
+        with file_path.open("r", newline="") as csv_file:
             reader = csv.DictReader(csv_file)
             fieldnames = reader.fieldnames
 
@@ -141,7 +140,7 @@ class Command:
                 timestamp = datetime.now().strftime("%M%S%f")
                 output_file_path = output_path / f"{command_name}_{timestamp}.csv"
 
-        with (Path(output_file_path).open('w', newline='') if output_file_path else StringIO()) as csv_file:
+        with Path(output_file_path).open("w", newline="") if output_file_path else StringIO() as csv_file:
             writer = csv.DictWriter(csv_file, fieldnames=list(data[0].keys()) if data else [])
             writer.writeheader()
             writer.writerows(data)

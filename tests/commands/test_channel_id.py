@@ -1,10 +1,11 @@
 import csv
+from io import StringIO
+from unittest.mock import call, patch
+
 import pytest
 
-from io import StringIO
-
-from unittest.mock import patch, call
 from youtool.commands.channel_id import ChannelId
+
 
 @pytest.fixture
 def csv_file(tmp_path):
@@ -14,6 +15,7 @@ def csv_file(tmp_path):
     csv_file = tmp_path / "urls.csv"
     csv_file.write_text(csv_content)
     return csv_file
+
 
 @pytest.fixture
 def youtube_api_mock():
@@ -26,6 +28,7 @@ def youtube_api_mock():
         mock.return_value.channel_id_from_url.side_effect = lambda url: f"channel-{url}"
         yield mock
 
+
 def test_channels_ids_csv_preparation(youtube_api_mock):
     """Fixture to mock the YouTube API.
 
@@ -37,7 +40,7 @@ def test_channels_ids_csv_preparation(youtube_api_mock):
     id_column_name = "custom_id_column"
     expected_result_data = [
         {id_column_name: "channel-https://www.youtube.com/@Turicas/featured"},
-        {id_column_name: "channel-https://www.youtube.com/c/PythonicCaf%C3%A9"}
+        {id_column_name: "channel-https://www.youtube.com/c/PythonicCaf%C3%A9"},
     ]
     with StringIO() as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=[id_column_name])
@@ -61,6 +64,7 @@ def test_resolve_urls_with_direct_urls():
     result = ChannelId.resolve_urls(urls, None, None)
     assert result == urls
 
+
 def test_resolve_urls_with_file_path(csv_file):
     """Test to verify resolving URLs from a CSV file.
 
@@ -69,6 +73,7 @@ def test_resolve_urls_with_file_path(csv_file):
     """
     result = ChannelId.resolve_urls(None, csv_file, "channel_url")
     assert result == ["https://www.youtube.com/@Turicas/featured"]
+
 
 def test_resolve_urls_raises_exception():
     """Test to verify exception raising when no URLs are provided.

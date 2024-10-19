@@ -25,9 +25,7 @@ def test_video_transcription(mocker, videos_ids, videos_urls, tmp_path):
         ids=videos_ids, urls=videos_urls, language_code=language_code, output_dir=tmp_path
     )
 
-    videos_transcriptions_mock.assert_called_once_with(
-        list(set(videos_ids)), language_code, tmp_path
-    )
+    videos_transcriptions_mock.assert_called_once_with(list(set(videos_ids)), language_code, tmp_path)
 
     for video_id in videos_ids:
         assert str(tmp_path / f"{video_id}.{language_code}.vtt") in result
@@ -36,9 +34,9 @@ def test_video_transcription(mocker, videos_ids, videos_urls, tmp_path):
 def test_video_transcription_input_from_file(mocker, videos_ids, tmp_path):
     """Test the video transcription command with input from a CSV file.
 
-    This test verifies the functionality of the VideoTranscription.execute method when 
-    video IDs are provided via a CSV file. It mocks the YouTube API to simulate fetching 
-    transcriptions for the listed video IDs. Transcriptions are expected to be saved in 
+    This test verifies the functionality of the VideoTranscription.execute method when
+    video IDs are provided via a CSV file. It mocks the YouTube API to simulate fetching
+    transcriptions for the listed video IDs. Transcriptions are expected to be saved in
     VTT format in the specified temporary directory.
     """
     youtube_mock = mocker.patch("youtool.commands.video_transcription.YouTube")
@@ -57,14 +55,10 @@ def test_video_transcription_input_from_file(mocker, videos_ids, tmp_path):
         open(tmp_path / f"{video_id}.{language_code}.vtt", "a").close()
 
     result = VideoTranscription.execute(
-        ids=None, urls=None,
-        language_code=language_code, output_dir=tmp_path,
-        input_file_path=input_file_path
+        ids=None, urls=None, language_code=language_code, output_dir=tmp_path, input_file_path=input_file_path
     )
 
-    videos_transcriptions_mock.assert_called_once_with(
-        list(set(videos_ids)), language_code, tmp_path
-    )
+    videos_transcriptions_mock.assert_called_once_with(list(set(videos_ids)), language_code, tmp_path)
 
     for video_id in videos_ids:
         assert str(tmp_path / f"{video_id}.{language_code}.vtt") in result

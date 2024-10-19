@@ -1,9 +1,8 @@
 import csv
-import pytest
-
-from io import StringIO
 from datetime import datetime
+from io import StringIO
 from unittest.mock import Mock
+
 from youtool.commands import VideoComments
 
 
@@ -15,10 +14,8 @@ def test_video_comments(mocker):
     """
     youtube_mock = mocker.patch("youtool.commands.video_comments.YouTube")
     video_id = "video_id_mock"
-    
-    expected_result = [
-        {"text": "my_comment", "author": "my_name"}
-    ]
+
+    expected_result = [{"text": "my_comment", "author": "my_name"}]
 
     csv_file = StringIO()
     csv_writer = csv.DictWriter(csv_file, fieldnames=expected_result[0].keys())
@@ -42,10 +39,8 @@ def test_video_comments_with_file_output(mocker, tmp_path):
     """
     youtube_mock = mocker.patch("youtool.commands.video_comments.YouTube")
     video_id = "video_id_mock"
-    
-    expected_result = [
-        {"text": "my_comment", "author": "my_name"}
-    ]
+
+    expected_result = [{"text": "my_comment", "author": "my_name"}]
 
     csv_file = StringIO()
     csv_writer = csv.DictWriter(csv_file, fieldnames=expected_result[0].keys())

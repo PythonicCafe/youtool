@@ -1,4 +1,3 @@
-
 from pathlib import Path
 
 from youtool import YouTube
@@ -8,13 +7,14 @@ from .base import Command
 
 class ChannelId(Command):
     """Get channel IDs from a list of URLs (or CSV filename with URLs inside), generate CSV output (just the IDs)."""
+
     name = "channel-id"
     arguments = [
         {"name": "--urls", "type": str, "help": "Channels urls", "nargs": "*"},
         {"name": "--urls-file-path", "type": str, "help": "Channels urls csv file path"},
         {"name": "--output-file-path", "type": str, "help": "Output csv file path"},
         {"name": "--url-column-name", "type": str, "help": "URL column name on csv input files"},
-        {"name": "--id-column-name", "type": str, "help": "Channel ID column name on csv output files"}
+        {"name": "--id-column-name", "type": str, "help": "Channel ID column name on csv output files"},
     ]
 
     URL_COLUMN_NAME: str = "channel_url"
@@ -58,17 +58,11 @@ class ChannelId(Command):
 
         youtube = YouTube([api_key], disable_ipv6=True)
 
-        channels_ids = [
-            youtube.channel_id_from_url(url) for url in urls if url
-        ]
+        channels_ids = [youtube.channel_id_from_url(url) for url in urls if url]
 
         result = cls.data_to_csv(
-            data=[
-                {
-                    (id_column_name or cls.CHANNEL_ID_COLUMN_NAME): channel_id
-                } for channel_id in channels_ids
-            ],
-            output_file_path=output_file_path
+            data=[{(id_column_name or cls.CHANNEL_ID_COLUMN_NAME): channel_id} for channel_id in channels_ids],
+            output_file_path=output_file_path,
         )
 
         return result
@@ -77,8 +71,7 @@ class ChannelId(Command):
     def resolve_urls(cls, urls, urls_file_path, url_column_name):
         if urls_file_path and not urls:
             urls = cls.data_from_csv(
-                file_path=Path(urls_file_path),
-                data_column_name=url_column_name or cls.URL_COLUMN_NAME
+                file_path=Path(urls_file_path), data_column_name=url_column_name or cls.URL_COLUMN_NAME
             )
 
         if not urls:

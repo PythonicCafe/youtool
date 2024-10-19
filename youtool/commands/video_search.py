@@ -1,6 +1,4 @@
-import csv
-
-from typing import List, Dict, Optional, Self
+from typing import List, Self
 
 from youtool import YouTube
 
@@ -12,6 +10,7 @@ class VideoSearch(Command):
     Search video info from a list of IDs or URLs (or CSV filename with URLs/IDs inside),
     generate CSV output (simplified video dict schema or option to get full video info)
     """
+
     name = "video-search"
     arguments = [
         {"name": "--ids", "type": str, "help": "Video IDs", "nargs": "*"},
@@ -20,16 +19,20 @@ class VideoSearch(Command):
         {"name": "--output-file-path", "type": str, "help": "Output CSV file path"},
         {"name": "--full-info", "type": bool, "help": "Option to get full video info", "default": False},
         {"name": "--url-column-name", "type": str, "help": "URL column name on csv input files"},
-        {"name": "--id-column-name", "type": str, "help": "Channel ID column name on csv output files"}
+        {"name": "--id-column-name", "type": str, "help": "Channel ID column name on csv output files"},
     ]
 
     ID_COLUMN_NAME: str = "video_id"
     URL_COLUMN_NAME: str = "video_url"
-    INFO_COLUMNS: List[str] = [
-        "id", "title", "published_at", "view_count"
-    ]
+    INFO_COLUMNS: List[str] = ["id", "title", "published_at", "view_count"]
     FULL_INFO_COLUMNS: List[str] = [
-        "id", "title", "description", "published_at", "view_count", "like_count", "comment_count"
+        "id",
+        "title",
+        "description",
+        "published_at",
+        "view_count",
+        "like_count",
+        "comment_count",
     ]
 
     @classmethod
@@ -48,8 +51,8 @@ class VideoSearch(Command):
             id_column_name (str, optional): The name of the column in the input CSV file that contains the IDs. Default is "video_id".
 
         Returns:
-            str: A message indicating the result of the command. If output_file_path is specified, 
-            the message will include the path to the generated CSV file. 
+            str: A message indicating the result of the command. If output_file_path is specified,
+            the message will include the path to the generated CSV file.
             Otherwise, it will return the result as a string.
 
         Raises:
@@ -66,17 +69,17 @@ class VideoSearch(Command):
 
         info_columns = VideoSearch.FULL_INFO_COLUMNS if full_info else VideoSearch.INFO_COLUMNS
 
-        if (input_file_path := kwargs.get("input_file_path")):
-            if (urls_from_csv := cls.data_from_csv(input_file_path, url_column_name)):
+        if input_file_path := kwargs.get("input_file_path"):
+            if urls_from_csv := cls.data_from_csv(input_file_path, url_column_name):
                 ids += [cls.video_id_from_url(url) for url in urls_from_csv]
-            if (ids_from_csv := cls.data_from_csv(input_file_path, id_column_name)):
+            if ids_from_csv := cls.data_from_csv(input_file_path, id_column_name):
                 ids += ids_from_csv
 
         if not ids and not urls:
             raise Exception("Either 'ids' or 'urls' must be provided for the video-search command")
 
         youtube = YouTube([api_key], disable_ipv6=True)
-        
+
         if urls:
             ids += [cls.video_id_from_url(url) for url in urls]
 
@@ -85,10 +88,6 @@ class VideoSearch(Command):
         videos_infos = list(youtube.videos_infos([_id for _id in ids if _id]))
 
         return cls.data_to_csv(
-            data=[
-                VideoSearch.filter_fields(
-                    video_info, info_columns
-                ) for video_info in videos_infos
-            ],
-            output_file_path=output_file_path
+            data=[VideoSearch.filter_fields(video_info, info_columns) for video_info in videos_infos],
+            output_file_path=output_file_path,
         )

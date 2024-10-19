@@ -1,11 +1,9 @@
 import csv
-import pytest
-
-from io import StringIO
 from datetime import datetime
+from io import StringIO
 from unittest.mock import Mock
-from youtool.commands import VideoLiveChat
 
+from youtool.commands import VideoLiveChat
 
 CHAT_MESSAGE_COLUMNS = [
     "id",
@@ -21,6 +19,7 @@ CHAT_MESSAGE_COLUMNS = [
     "money_currency",
     "money_amount",
 ]
+
 
 def test_video_livechat(mocker):
     """Test case for fetching live chat messages from a YouTube video.

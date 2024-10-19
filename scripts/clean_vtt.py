@@ -1,16 +1,9 @@
 # pip install webvtt-py
 import argparse
 import io
-import json
-import os
-import shelve
-import time
 from pathlib import Path
 
-import tiktoken
 import webvtt
-from openai import APITimeoutError, OpenAI
-from rows.utils import CsvLazyDictWriter
 from tqdm import tqdm
 
 

@@ -1,5 +1,4 @@
-from datetime import datetime
-from typing import List, Optional, Self
+from typing import Self
 
 from .. import YouTube
 from .base import Command

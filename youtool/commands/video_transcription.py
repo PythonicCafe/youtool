@@ -1,12 +1,13 @@
-import csv
 from pathlib import Path
-from typing import List, Dict
-from .base import Command
+
 from youtool import YouTube
+
+from .base import Command
+
 
 class VideoTranscription(Command):
     """Download video transcriptions based on language code, path, and list of video IDs or URLs (or CSV filename with URLs/IDs inside).
-       Download files to destination and report results."""
+    Download files to destination and report results."""
 
     name = "video-transcription"
     arguments = [
@@ -17,7 +18,7 @@ class VideoTranscription(Command):
         {"name": "--language-code", "type": str, "help": "Language code for transcription"},
         {"name": "--api-key", "type": str, "help": "API key for YouTube Data API"},
         {"name": "--url-column-name", "type": str, "help": "URL column name on csv input files"},
-        {"name": "--id-column-name", "type": str, "help": "Channel ID column name on csv output files"}
+        {"name": "--id-column-name", "type": str, "help": "Channel ID column name on csv output files"},
     ]
 
     ID_COLUMN_NAME: str = "video_id"
@@ -52,16 +53,14 @@ class VideoTranscription(Command):
 
         youtube = YouTube([api_key], disable_ipv6=True)
 
-        if (input_file_path := kwargs.get("input_file_path")):
-            if (urls_from_csv := cls.data_from_csv(input_file_path, url_column_name, False)):
+        if input_file_path := kwargs.get("input_file_path"):
+            if urls_from_csv := cls.data_from_csv(input_file_path, url_column_name, False):
                 ids += [cls.video_id_from_url(url) for url in urls_from_csv]
-            if (ids_from_csv := cls.data_from_csv(input_file_path, id_column_name, False)):
+            if ids_from_csv := cls.data_from_csv(input_file_path, id_column_name, False):
                 ids += ids_from_csv
 
         if not ids and not urls:
-            raise Exception(
-                "Either 'ids' or 'urls' must be provided for the video-transcription command"
-            )
+            raise Exception("Either 'ids' or 'urls' must be provided for the video-transcription command")
 
         if urls:
             ids += [cls.video_id_from_url(url) for url in urls]
@@ -71,8 +70,8 @@ class VideoTranscription(Command):
         youtube.videos_transcriptions(ids, language_code, output_dir)
         output_dir_path = Path(output_dir)
         saved_transcriptions = [
-            str(
-                output_dir_path / f"{v_id}.{language_code}.vtt"
-            ) for v_id in ids if (output_dir_path / f"{v_id}.{language_code}.vtt").is_file()
+            str(output_dir_path / f"{v_id}.{language_code}.vtt")
+            for v_id in ids
+            if (output_dir_path / f"{v_id}.{language_code}.vtt").is_file()
         ]
         return "\n".join(saved_transcriptions)

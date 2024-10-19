@@ -1,6 +1,5 @@
 import csv
-
-from typing import List, Dict, Optional, Self
+from typing import List, Self
 
 from youtool import YouTube
 
@@ -8,20 +7,26 @@ from .base import Command
 
 
 class VideoInfo(Command):
-    """Get video info from a list of IDs or URLs (or CSV filename with URLs/IDs inside), generate CSV output (same schema for video dicts)")
-    """
+    """Get video info from a list of IDs or URLs (or CSV filename with URLs/IDs inside), generate CSV output (same schema for video dicts)")"""
+
     name = "video-info"
     arguments = [
         {"name": "--ids", "type": str, "help": "Video IDs", "nargs": "*"},
         {"name": "--urls", "type": str, "help": "Video URLs", "nargs": "*"},
         {"name": "--input-file-path", "type": str, "help": "Input CSV file path with URLs/IDs"},
-        {"name": "--output-file-path", "type": str, "help": "Output CSV file path"}
+        {"name": "--output-file-path", "type": str, "help": "Output CSV file path"},
     ]
 
     ID_COLUMN_NAME: str = "video_id"
     URL_COLUMN_NAME: str = "video_url"
     INFO_COLUMNS: List[str] = [
-        "id", "title", "description", "published_at", "view_count", "like_count", "comment_count"
+        "id",
+        "title",
+        "description",
+        "published_at",
+        "view_count",
+        "like_count",
+        "comment_count",
     ]
 
     @classmethod
@@ -39,7 +44,7 @@ class VideoInfo(Command):
                                             Default is "video_url".
             id_column_name (str, optional): The name of the column in the input_file_path CSV file that contains the IDs.
                                             Default is "video_id".
-            info_columns (str, optional): Comma-separated list of columns to include in the output CSV. 
+            info_columns (str, optional): Comma-separated list of columns to include in the output CSV.
                                             Default is the class attribute INFO_COLUMNS.
 
         Returns:
@@ -58,12 +63,12 @@ class VideoInfo(Command):
 
         info_columns = kwargs.get("info_columns")
 
-        info_columns = [
-            column.strip() for column in info_columns.split(",")
-        ] if info_columns else VideoInfo.INFO_COLUMNS
-        
+        info_columns = (
+            [column.strip() for column in info_columns.split(",")] if info_columns else VideoInfo.INFO_COLUMNS
+        )
+
         if input_file_path:
-            with open(input_file_path, mode='r') as infile:
+            with open(input_file_path, mode="r") as infile:
                 reader = csv.DictReader(infile)
                 for row in reader:
                     if cls.ID_COLUMN_NAME in row:
@@ -83,10 +88,6 @@ class VideoInfo(Command):
         ids = list(set(ids))
         videos_infos = list(youtube.videos_infos([_id for _id in ids if _id]))
         return cls.data_to_csv(
-            data=[
-                VideoInfo.filter_fields(
-                    video_info, info_columns
-                ) for video_info in videos_infos
-            ],
-            output_file_path=output_file_path
+            data=[VideoInfo.filter_fields(video_info, info_columns) for video_info in videos_infos],
+            output_file_path=output_file_path,
         )

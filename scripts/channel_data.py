@@ -1,12 +1,12 @@
 # pip install youtool[livechat,transcription]
 import argparse
+import csv
 import os
-import json
-import shelve
 from pathlib import Path
 
 from chat_downloader.errors import ChatDisabled, LoginRequired, NoChatReplay
 from tqdm import tqdm
+
 from youtool import YouTube
 
 
@@ -41,19 +41,14 @@ class CsvLazyDictWriter:  # Got and adapted from <https://github.com/turicas/row
             if getattr(self.filename_or_fobj, "read", None) is not None:
                 self._fobj = self.filename_or_fobj
             else:
-                self._fobj = open(
-                    self.filename_or_fobj, mode="w", encoding=self.encoding
-                )
+                self._fobj = open(self.filename_or_fobj, mode="w", encoding=self.encoding)
 
         return self._fobj
 
     def writerow(self, row):
         if self.writer is None:
             self.writer = csv.DictWriter(
-                self.fobj,
-                fieldnames=list(row.keys()),
-                *self.writer_args,
-                **self.writer_kwargs
+                self.fobj, fieldnames=list(row.keys()), *self.writer_args, **self.writer_kwargs
             )
             self.writer.writeheader()
 
@@ -70,7 +65,9 @@ class CsvLazyDictWriter:  # Got and adapted from <https://github.com/turicas/row
 
 # TODO: add options to get only part of the data (not all steps)
 parser = argparse.ArgumentParser()
-parser.add_argument("--api-key", default=os.environ.get("YOUTUBE_API_KEY"), help="Comma-separated list of YouTube API keys to use")
+parser.add_argument(
+    "--api-key", default=os.environ.get("YOUTUBE_API_KEY"), help="Comma-separated list of YouTube API keys to use"
+)
 parser.add_argument("username_or_channel_url", type=str)
 parser.add_argument("data_path", type=Path)
 parser.add_argument("language-code", default="pt-orig", help="See the list by running `yt-dlp --list-subs <video-URL>`")
@@ -79,7 +76,10 @@ args = parser.parse_args()
 if not args.api_key:
     import sys
 
-    print("ERROR: API key must be provided either by `--api-key` or `YOUTUBE_API_KEY` environment variable", file=sys.stderr)
+    print(
+        "ERROR: API key must be provided either by `--api-key` or `YOUTUBE_API_KEY` environment variable",
+        file=sys.stderr,
+    )
     exit(1)
 api_keys = [key.strip() for key in args.api_key.split(",") if key.strip()]
 
@@ -96,7 +96,7 @@ playlist_csv_filename = data_path / f"{username}-playlist.csv"
 playlist_video_csv_filename = data_path / f"{username}-playlist-video.csv"
 video_csv_filename = data_path / f"{username}-video.csv"
 comment_csv_filename = data_path / f"{username}-comment.csv"
-livechat_csv_filename = data_path / f"username}-livechat.csv"
+livechat_csv_filename = data_path / f"{username}-livechat.csv"
 language_code = args.language_code
 video_transcription_path = data_path / Path(f"{username}-transcriptions")
 

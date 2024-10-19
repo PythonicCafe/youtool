@@ -1,8 +1,9 @@
-import csv
-from typing import List, Dict, Optional, Self
+from typing import List, Self
 
 from youtool import YouTube
+
 from .base import Command
+
 
 class VideoComments(Command):
     """Get comments from a video ID, generate CSV output (same schema for comment dicts)"""
@@ -10,12 +11,10 @@ class VideoComments(Command):
     name = "video-comments"
     arguments = [
         {"name": "--id", "type": str, "help": "Video ID", "required": True},
-        {"name": "--output-file-path", "type": str, "help": "Output CSV file path"}
+        {"name": "--output-file-path", "type": str, "help": "Output CSV file path"},
     ]
 
-    COMMENT_COLUMNS: List[str] = [
-        "comment_id", "author_display_name", "text_display", "like_count", "published_at"
-    ]
+    COMMENT_COLUMNS: List[str] = ["comment_id", "author_display_name", "text_display", "like_count", "published_at"]
 
     @classmethod
     def execute(cls: Self, **kwargs) -> str:
@@ -28,8 +27,8 @@ class VideoComments(Command):
             api_key (str): The API key to authenticate with the YouTube Data API.
 
         Returns:
-            A message indicating the result of the command. If output_file_path is specified, 
-            the message will include the path to the generated CSV file. 
+            A message indicating the result of the command. If output_file_path is specified,
+            the message will include the path to the generated CSV file.
             Otherwise, it will return the result as a string.
         """
         video_id = kwargs.get("id")
@@ -37,11 +36,7 @@ class VideoComments(Command):
         api_key = kwargs.get("api_key")
 
         youtube = YouTube([api_key], disable_ipv6=True)
-        
+
         comments = list(youtube.video_comments(video_id))
 
-        return cls.data_to_csv(
-            data=comments,
-            output_file_path=output_file_path
-        )
-    
+        return cls.data_to_csv(data=comments, output_file_path=output_file_path)

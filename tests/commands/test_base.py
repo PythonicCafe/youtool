@@ -2,8 +2,6 @@ import csv
 import argparse
 import pytest
 
-from io import StringIO
-from datetime import datetime
 from pathlib import Path
 from unittest.mock import MagicMock, patch, mock_open
 from youtool.commands import Command
@@ -90,7 +88,7 @@ def test_data_from_csv_valid(mock_csv_file):
     with patch('pathlib.Path.is_file', return_value=True):
         with patch('builtins.open', mock_open(read_data=mock_csv_file)):
             data_column_name = "URL"
-            file_path = Path("tests/commands/csv_valid.csv")
+            file_path = Path("tests/resources/csv_valid.csv")
             result = Command.data_from_csv(file_path, data_column_name)
             assert len(result) == 2
             assert result[0] == "http://example.com"
@@ -110,10 +108,10 @@ def test_data_from_csv_file_not_found():
 def test_data_from_csv_column_not_found(mock_csv_file):
     with patch('pathlib.Path.is_file', return_value=True):
         with patch('builtins.open', mock_open(read_data=mock_csv_file)):
-            file_path = Path("tests/commands/csv_column_not_found.csv")
+            file_path = Path("tests/resources/csv_column_not_found.csv")
             with pytest.raises(Exception) as exc_info:
                 Command.data_from_csv(file_path, "NonExistentColumn")
-            assert "Column NonExistentColumn not found on tests/commands/csv_column_not_found.csv" in str(exc_info.value), "Exception message should contain column not found error"
+            assert "Column NonExistentColumn not found on tests/resources/csv_column_not_found.csv" in str(exc_info.value)
 
 
 @pytest.fixture
@@ -134,13 +132,13 @@ def test_data_to_csv_with_output_file_path(tmp_path, sample_data):
     
     result_path = Command.data_to_csv(sample_data, str(output_file_path))
     
-    assert result_path == str(output_file_path), "The returned path should match the provided output file path"
-    assert output_file_path.exists(), "The output file should exist"
+    assert result_path == str(output_file_path)
+    assert output_file_path.exists()
     with output_file_path.open('r') as f:
         reader = csv.DictReader(f)
         rows = list(reader)
-        assert len(rows) == 2, "There should be two rows in the output CSV"
-        assert rows[0]["id"] == "123" and rows[1]["id"] == "456", "The IDs should match the sample data"
+        assert len(rows) == 2
+        assert rows[0]["id"] == "123" and rows[1]["id"] == "456"
 
 def test_data_to_csv_without_output_file_path(sample_data):
     """Test to verify writing data to a CSV format without an output file path specified.

@@ -1,3 +1,4 @@
+import os
 from typing import Dict, List, Optional, Self
 
 from .. import YouTube
@@ -25,6 +26,9 @@ class ChannelInfo(Command):
 
     @classmethod
     def add_arguments(cls, parser):
+        parser.add_argument(
+            "--api-key", type=str, help="YouTube API Key", dest="api_key", default=os.environ.get("YOUTUBE_API_KEY")
+        )
         parser.add_argument("--urls", type=str, help="Channel URLs", nargs="*")
         parser.add_argument("--usernames", type=str, help="Channel usernames", nargs="*")
         parser.add_argument("--ids", type=str, help="Channel IDs", nargs="*")

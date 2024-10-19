@@ -1,3 +1,4 @@
+import os
 from typing import List, Self
 
 from .. import YouTube
@@ -26,6 +27,9 @@ class VideoSearch(Command):
 
     @classmethod
     def add_arguments(cls, parser):
+        parser.add_argument(
+            "--api-key", type=str, help="YouTube API Key", dest="api_key", default=os.environ.get("YOUTUBE_API_KEY")
+        )
         parser.add_argument("--ids", type=str, help="Video IDs", nargs="*")
         parser.add_argument("--urls", type=str, help="Video URLs", nargs="*")
         parser.add_argument("--input-file-path", type=str, help="Input CSV file path with URLs/IDs")

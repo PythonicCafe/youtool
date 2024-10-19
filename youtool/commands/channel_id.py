@@ -32,7 +32,6 @@ class ChannelId(Command):
                                             Requires url_column_name to specify the column with URLs.
             output_file_path (str, optional): Path to the output CSV file where channel IDs will be saved.
                                               If not provided, the result will be returned as a string.
-            api_key (str): The API key to authenticate with the YouTube Data API.
             url_column_name (str, optional): The name of the column in the urls_file_path CSV file that contains the URLs.
                                              Default is "url".
             id_column_name (str, optional): The name of the column for channel IDs in the output CSV file.
@@ -48,17 +47,14 @@ class ChannelId(Command):
         urls = kwargs.get("urls")
         urls_file_path = kwargs.get("urls_file_path")
         output_file_path = kwargs.get("output_file_path")
-        api_key = kwargs.get("api_key")
 
         url_column_name = kwargs.get("url_column_name")
         id_column_name = kwargs.get("id_column_name")
 
         urls = cls.resolve_urls(urls, urls_file_path, url_column_name)
 
-        youtube = YouTube([api_key], disable_ipv6=True)
-
+        youtube = YouTube([None], disable_ipv6=True)
         channels_ids = [youtube.channel_id_from_url(url) for url in urls if url]
-
         result = cls.data_to_csv(
             data=[{(id_column_name or cls.CHANNEL_ID_COLUMN_NAME): channel_id} for channel_id in channels_ids],
             output_file_path=output_file_path,

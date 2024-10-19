@@ -1,5 +1,4 @@
 import argparse
-import os
 
 from .commands import COMMANDS
 

@@ -33,7 +33,6 @@ class VideoTranscription(Command):
             input_file_path (str): Path to a CSV file containing YouTube video IDs or URLs.
             output_dir (str): Directory path to save the transcription files.
             language_code (str): Language code for the transcription language.
-            api_key (str): The API key to authenticate with the YouTube Data API.
             url_column_name (str, optional): Column name for URLs in the CSV input file. Defaults to "video_url".
             id_column_name (str, optional): Column name for IDs in the CSV output file. Defaults to "video_id".
 
@@ -45,12 +44,11 @@ class VideoTranscription(Command):
         input_file_path = kwargs.get("input_file_path")
         output_dir = kwargs.get("output_dir")
         language_code = kwargs.get("language_code")
-        api_key = kwargs.get("api_key")
 
         url_column_name = kwargs.get("url_column_name", cls.URL_COLUMN_NAME)
         id_column_name = kwargs.get("id_column_name", cls.ID_COLUMN_NAME)
 
-        youtube = YouTube([api_key], disable_ipv6=True)
+        youtube = YouTube([None], disable_ipv6=True)
 
         if input_file_path := kwargs.get("input_file_path"):
             if urls_from_csv := cls.data_from_csv(input_file_path, url_column_name, False):

@@ -1,3 +1,4 @@
+import os
 from typing import List, Self
 
 from .. import YouTube
@@ -12,6 +13,9 @@ class VideoComments(Command):
 
     @classmethod
     def add_arguments(cls, parser):
+        parser.add_argument(
+            "--api-key", type=str, help="YouTube API Key", dest="api_key", default=os.environ.get("YOUTUBE_API_KEY")
+        )
         parser.add_argument("--id", type=str, help="Video ID", required=True)
         parser.add_argument("--output-file-path", type=str, help="Output CSV file path")
 
@@ -35,7 +39,5 @@ class VideoComments(Command):
         api_key = kwargs.get("api_key")
 
         youtube = YouTube([api_key], disable_ipv6=True)
-
         comments = list(youtube.video_comments(video_id))
-
         return cls.data_to_csv(data=comments, output_file_path=output_file_path)

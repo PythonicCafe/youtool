@@ -24,7 +24,6 @@ class VideoLiveChat(Command):
             id (str): The ID of the YouTube video.
             output_file_path (str): Path to the output CSV file where chat messages will be saved.
             expand_emojis (bool): Whether to expand emojis in chat messages. Defaults to True.
-            api_key (str): The API key to authenticate with the YouTube Data API.
 
         Returns:
             A message indicating the result of the command. If output_file_path is specified,
